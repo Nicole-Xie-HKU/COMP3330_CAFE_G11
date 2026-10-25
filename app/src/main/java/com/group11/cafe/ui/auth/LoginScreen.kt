@@ -10,8 +10,12 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LoginScreen(
-    onLoginClick: () -> Unit,
-    onGuestClick: () -> Unit
+    onLoginClick: (
+            String,
+            String
+    ) -> Unit,
+    onGuestClick: () -> Unit,
+    onRegisterClick: () -> Unit
 ) {
 
     var email by remember {
@@ -64,7 +68,12 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = onLoginClick,
+            onClick = {
+                onLoginClick(
+                    email,
+                    password
+                )
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Login")
@@ -73,7 +82,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedButton(
-            onClick = {},
+            onClick = onRegisterClick,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Register")
