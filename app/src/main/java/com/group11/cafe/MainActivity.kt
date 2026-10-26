@@ -19,9 +19,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CAFETheme {
+
                 AppNavigation()
-            }
+
         }
     }
 }

@@ -8,7 +8,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun OrganizerDashboard(
-    onCreateEventClick: () -> Unit = {}
+    onCreateEventClick: () -> Unit,
+    onViewEventsClick: () -> Unit
 ) {
 
     Column(
@@ -37,5 +38,12 @@ fun OrganizerDashboard(
         Button(onClick = {}) {
             Text("Manage Crew")
         }
+
+        Button(
+            onClick = onViewEventsClick
+        ) {
+            Text("My Events")
+        }
+
     }
 }

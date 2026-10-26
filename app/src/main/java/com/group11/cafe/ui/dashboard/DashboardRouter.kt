@@ -6,7 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.group11.cafe.navigation.Screen
-import com.group11.cafe.ui.auth.viewmodel.DashboardViewModel
+import com.group11.cafe.viewmodel.DashboardViewModel
 
 import android.util.Log
 
