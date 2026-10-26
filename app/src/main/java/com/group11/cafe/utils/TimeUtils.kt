@@ -6,21 +6,30 @@ import java.time.format.DateTimeFormatter
 object TimeUtils {
 
     private val formatter =
-        DateTimeFormatter.ofPattern("HH:mm")
+        DateTimeFormatter.ofPattern("H:mm")
 
     fun addMinutes(
         time: String,
         minutes: Long
     ): String {
 
-        val parsed =
-            LocalTime.parse(
-                time,
-                formatter
-            )
+        return try {
 
-        return parsed
-            .plusMinutes(minutes)
-            .format(formatter)
+            val parsed =
+                LocalTime.parse(
+                    time.trim(),
+                    formatter
+                )
+
+            parsed
+                .plusMinutes(minutes)
+                .format(
+                    DateTimeFormatter.ofPattern("HH:mm")
+                )
+
+        } catch (e: Exception) {
+
+            time
+        }
     }
 }
