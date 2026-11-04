@@ -62,9 +62,6 @@ sealed class Screen(val route: String) {
             sessionId: String
         ) = "shift_schedule/$sessionId"
     }
-<<<<<<< HEAD
-=======
     object AttendanceScanner :
         Screen("attendance_scanner")
->>>>>>> origin/hadi/attendance-qr-scanner
 }

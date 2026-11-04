@@ -59,11 +59,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-<<<<<<< HEAD
-
-=======
 import com.group11.cafe.ui.attendance.AttendanceScanner
->>>>>>> origin/hadi/attendance-qr-scanner
 
 @Composable
 fun AppNavigation() {
@@ -165,11 +161,6 @@ fun AppNavigation() {
         }
 
         composable(Screen.CrewDashboard.route) {
-<<<<<<< HEAD
-            CrewDashboard()
-        }
-
-=======
             CrewDashboard(
                 onAttendanceScannerClick = {
                     navController.navigate(
@@ -186,7 +177,6 @@ fun AppNavigation() {
                 }
             )
         }
->>>>>>> origin/hadi/attendance-qr-scanner
         composable(Screen.ParticipantDashboard.route) {
             ParticipantDashboard()
         }
