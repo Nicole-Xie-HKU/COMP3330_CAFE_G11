@@ -9,7 +9,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ShiftScheduleScreen(
     onShift15: () -> Unit,
-    onShift30: () -> Unit
+    onShift30: () -> Unit,
+    errorMessage: String? = null,
+    isLoading: Boolean = false
 ) {
 
     Column(
@@ -28,6 +30,7 @@ fun ShiftScheduleScreen(
         )
 
         Button(
+            enabled = !isLoading,
             onClick = onShift15
         ) {
             Text("+15 Minutes")
@@ -38,9 +41,23 @@ fun ShiftScheduleScreen(
         )
 
         Button(
+            enabled = !isLoading,
             onClick = onShift30
         ) {
             Text("+30 Minutes")
+        }
+
+        if (isLoading) {
+            Spacer(modifier = Modifier.height(16.dp))
+            CircularProgressIndicator()
+        }
+
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
 }

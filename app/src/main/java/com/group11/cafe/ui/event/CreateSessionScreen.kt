@@ -8,7 +8,15 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CreateSessionScreen(
-    onCreateSession: (
+    screenTitle: String = "Create Session",
+    buttonText: String = "Create Session",
+    initialTitle: String = "",
+    initialLocation: String = "",
+    initialStartTime: String = "",
+    initialEndTime: String = "",
+    errorMessage: String? = null,
+    isLoading: Boolean = false,
+    onSubmit: (
         String,
         String,
         String,
@@ -17,19 +25,19 @@ fun CreateSessionScreen(
 ) {
 
     var title by remember {
-        mutableStateOf("")
+        mutableStateOf(initialTitle)
     }
 
     var location by remember {
-        mutableStateOf("")
+        mutableStateOf(initialLocation)
     }
 
     var startTime by remember {
-        mutableStateOf("")
+        mutableStateOf(initialStartTime)
     }
 
     var endTime by remember {
-        mutableStateOf("")
+        mutableStateOf(initialEndTime)
     }
 
     Column(
@@ -39,7 +47,7 @@ fun CreateSessionScreen(
     ) {
 
         Text(
-            "Create Session",
+            screenTitle,
             style =
                 MaterialTheme.typography.headlineMedium
         )
@@ -104,9 +112,21 @@ fun CreateSessionScreen(
             modifier = Modifier.height(24.dp)
         )
 
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error
+            )
+
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
+        }
+
         Button(
+            enabled = !isLoading,
             onClick = {
-                onCreateSession(
+                onSubmit(
                     title,
                     location,
                     startTime,
@@ -114,7 +134,9 @@ fun CreateSessionScreen(
                 )
             }
         ) {
-            Text("Create Session")
+            Text(
+                if (isLoading) "Saving..." else buttonText
+            )
         }
     }
 }
