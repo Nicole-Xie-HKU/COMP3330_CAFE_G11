@@ -15,7 +15,9 @@ fun LoginScreen(
             String
     ) -> Unit,
     onGuestClick: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    errorMessage: String? = null,
+    isLoading: Boolean = false
 ) {
 
     var email by remember {
@@ -68,6 +70,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
+            enabled = !isLoading,
             onClick = {
                 onLoginClick(
                     email,
@@ -76,7 +79,16 @@ fun LoginScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Login")
+            Text(if (isLoading) "Signing in..." else "Login")
+        }
+
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error
+            )
         }
 
         Spacer(modifier = Modifier.height(12.dp))

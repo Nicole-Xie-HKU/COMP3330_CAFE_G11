@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.group11.cafe.data.model.User
+import java.util.UUID
 
 class AuthRepository {
 
@@ -33,7 +34,17 @@ class AuthRepository {
                         id = result.user!!.uid,
                         name = name,
                         email = email,
-                        role = role
+                        role = role,
+                        inviteCode = if (role == "Organizer") {
+                            UUID
+                                .randomUUID()
+                                .toString()
+                                .replace("-", "")
+                                .take(6)
+                                .uppercase()
+                        } else {
+                            ""
+                        }
                     )
 
                 firestore

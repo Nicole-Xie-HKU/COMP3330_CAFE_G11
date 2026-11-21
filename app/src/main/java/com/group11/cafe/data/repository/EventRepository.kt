@@ -51,6 +51,23 @@ class EventRepository {
             }
     }
 
+    fun getAllEvents(
+        onSuccess: (List<Event>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("events")
+            .get()
+            .addOnSuccessListener { documents ->
+                onSuccess(
+                    documents.toObjects(Event::class.java)
+                )
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
     fun getEventById(
         eventId: String,
         onSuccess: (Event) -> Unit,
