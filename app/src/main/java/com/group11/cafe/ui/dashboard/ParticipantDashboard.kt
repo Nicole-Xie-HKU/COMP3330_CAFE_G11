@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.group11.cafe.ui.components.DashboardHeader
 
 @Composable
 fun ParticipantDashboard(
@@ -14,15 +15,17 @@ fun ParticipantDashboard(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(
+                horizontal = 20.dp,
+                vertical = 12.dp
+            )
     ) {
 
-        Text(
-            "Participant Dashboard",
-            style = MaterialTheme.typography.headlineMedium
+        DashboardHeader(
+            fallbackRole = "Participant"
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         Button(onClick = onViewScheduleClick) {
             Text("View Schedule")

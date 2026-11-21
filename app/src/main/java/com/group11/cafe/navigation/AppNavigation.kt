@@ -46,6 +46,10 @@ import com.group11.cafe.ui.event.SessionDetailsScreen
 import com.group11.cafe.ui.event.SessionListScreen
 import com.group11.cafe.ui.event.ShiftScheduleScreen
 import com.group11.cafe.ui.components.AppBackButton
+import com.group11.cafe.ui.components.AppBottomNavigationBar
+import com.group11.cafe.ui.components.EmptyPage
+import com.group11.cafe.ui.components.SettingsPage
+import com.group11.cafe.ui.organizer.OrganizerMembersPage
 import com.group11.cafe.utils.TimeUtils
 import com.group11.cafe.viewmodel.AttendanceViewModel
 import com.group11.cafe.viewmodel.EventViewModel
@@ -60,10 +64,27 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
+    val bottomNavigationItems = bottomNavigationItemsFor(currentRoute)
+    val rootRoutes = setOf(
+        Screen.OrganizerDashboard.route,
+        Screen.CrewDashboard.route,
+        Screen.ParticipantDashboard.route,
+        Screen.ParticipantEventsTab.route,
+        Screen.ParticipantSettings.route,
+        Screen.CrewTeam.route,
+        Screen.CrewSettings.route,
+        Screen.OrganizerMembers.route,
+        Screen.OrganizerSettings.route
+    )
 
     Scaffold(
         topBar = {
-            if (currentRoute != null && currentRoute != Screen.Login.route) {
+            if (
+                currentRoute != null &&
+                currentRoute != Screen.Login.route &&
+                currentRoute != Screen.Dashboard.route &&
+                currentRoute !in rootRoutes
+            ) {
                 TopAppBar(
                     title = {},
                     navigationIcon = {
@@ -72,6 +93,25 @@ fun AppNavigation() {
                                 navController.popBackStack()
                             }
                         )
+                    }
+                )
+            }
+        },
+        bottomBar = {
+            if (bottomNavigationItems != null) {
+                AppBottomNavigationBar(
+                    items = bottomNavigationItems,
+                    currentRoute = currentRoute,
+                    onItemClick = { destinationRoute ->
+                        if (destinationRoute != currentRoute) {
+                            navController.navigate(destinationRoute) {
+                                popUpTo(bottomNavigationItems.first().route) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     }
                 )
             }
@@ -216,6 +256,42 @@ fun AppNavigation() {
             ParticipantDashboard(
                 onViewScheduleClick = {
                     navController.navigate(Screen.ParticipantEventList.route)
+                }
+            )
+        }
+
+        composable(Screen.ParticipantEventsTab.route) {
+            EmptyPage("Events")
+        }
+
+        composable(Screen.ParticipantSettings.route) {
+            SettingsPage(
+                onLogoutClick = {
+                    logout(navController)
+                }
+            )
+        }
+
+        composable(Screen.CrewTeam.route) {
+            EmptyPage("Team")
+        }
+
+        composable(Screen.CrewSettings.route) {
+            SettingsPage(
+                onLogoutClick = {
+                    logout(navController)
+                }
+            )
+        }
+
+        composable(Screen.OrganizerMembers.route) {
+            OrganizerMembersPage()
+        }
+
+        composable(Screen.OrganizerSettings.route) {
+            SettingsPage(
+                onLogoutClick = {
+                    logout(navController)
                 }
             )
         }
@@ -725,7 +801,7 @@ fun AppNavigation() {
                         isLoading = isLoading,
                         onShift15 = {
                             isLoading = true
-                            shiftFollowingSessions(
+                                shiftFollowingSessions(
                                 sessionViewModel,
                                 session,
                                 15,
@@ -757,6 +833,17 @@ fun AppNavigation() {
         }
     }
 }
+}
+
+private fun logout(
+    navController: androidx.navigation.NavController
+) {
+    FirebaseAuth.getInstance().signOut()
+    navController.navigate(Screen.Login.route) {
+        popUpTo(navController.graph.id) {
+            inclusive = true
+        }
+    }
 }
 
 private fun shiftFollowingSessions(

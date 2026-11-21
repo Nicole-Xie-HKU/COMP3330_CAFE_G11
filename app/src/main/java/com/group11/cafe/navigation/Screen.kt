@@ -17,6 +17,24 @@ sealed class Screen(val route: String) {
     object ParticipantDashboard :
         Screen("participant_dashboard")
 
+    object ParticipantEventsTab :
+        Screen("participant_events_tab")
+
+    object ParticipantSettings :
+        Screen("participant_settings")
+
+    object CrewTeam :
+        Screen("crew_team")
+
+    object CrewSettings :
+        Screen("crew_settings")
+
+    object OrganizerMembers :
+        Screen("organizer_members")
+
+    object OrganizerSettings :
+        Screen("organizer_settings")
+
     object CreateEvent :
         Screen("create_event")
 
