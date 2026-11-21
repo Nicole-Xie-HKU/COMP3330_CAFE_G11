@@ -45,6 +45,7 @@ import com.group11.cafe.ui.event.ParticipantScheduleScreen
 import com.group11.cafe.ui.event.SessionDetailsScreen
 import com.group11.cafe.ui.event.SessionListScreen
 import com.group11.cafe.ui.event.ShiftScheduleScreen
+import com.group11.cafe.ui.crew.CrewTeamPage
 import com.group11.cafe.ui.components.AppBackButton
 import com.group11.cafe.ui.components.AppBottomNavigationBar
 import com.group11.cafe.ui.components.EmptyPage
@@ -273,7 +274,7 @@ fun AppNavigation() {
         }
 
         composable(Screen.CrewTeam.route) {
-            EmptyPage("Team")
+            CrewTeamPage()
         }
 
         composable(Screen.CrewSettings.route) {
