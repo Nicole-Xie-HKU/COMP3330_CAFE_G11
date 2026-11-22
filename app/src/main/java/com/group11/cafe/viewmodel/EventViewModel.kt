@@ -3,6 +3,7 @@ package com.group11.cafe.viewmodel
 import androidx.lifecycle.ViewModel
 import com.group11.cafe.data.model.Event
 import com.group11.cafe.data.repository.EventRepository
+import com.google.firebase.firestore.DocumentSnapshot
 
 class EventViewModel : ViewModel() {
 
@@ -40,6 +41,18 @@ class EventViewModel : ViewModel() {
         onFailure: (Exception) -> Unit
     ) {
         repository.getAllEvents(
+            onSuccess,
+            onFailure
+        )
+    }
+
+    fun getEventsPage(
+        lastDocument: DocumentSnapshot?,
+        onSuccess: (List<Event>, DocumentSnapshot?, Boolean) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.getEventsPage(
+            lastDocument,
             onSuccess,
             onFailure
         )

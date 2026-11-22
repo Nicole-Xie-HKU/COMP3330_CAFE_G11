@@ -10,12 +10,11 @@ import com.group11.cafe.ui.components.ParticipantQrCard
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.group11.cafe.viewmodel.DashboardViewModel
 import androidx.compose.runtime.*
-import com.google.firebase.auth.FirebaseAuth
 import com.group11.cafe.utils.ParticipantQrParser
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ParticipantDashboard(
-    onViewScheduleClick: () -> Unit
 ) {
     val dashboardViewModel: DashboardViewModel = viewModel()
     var qrCode by remember { mutableStateOf("") }
@@ -59,12 +58,5 @@ fun ParticipantDashboard(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Button(onClick = onViewScheduleClick) {
-            Text("View Schedule")
-        }
-
-        Button(onClick = {}) {
-            Text("Request Help")
-        }
     }
 }

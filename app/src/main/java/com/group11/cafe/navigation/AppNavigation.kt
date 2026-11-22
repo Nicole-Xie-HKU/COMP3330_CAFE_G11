@@ -42,6 +42,7 @@ import com.group11.cafe.ui.event.CreateSessionScreen
 import com.group11.cafe.ui.event.EventDetailsScreen
 import com.group11.cafe.ui.event.EventListScreen
 import com.group11.cafe.ui.event.ParticipantScheduleScreen
+import com.group11.cafe.ui.event.ParticipantEventsPage
 import com.group11.cafe.ui.event.SessionDetailsScreen
 import com.group11.cafe.ui.event.SessionListScreen
 import com.group11.cafe.ui.event.ShiftScheduleScreen
@@ -53,6 +54,7 @@ import com.group11.cafe.ui.components.SettingsPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
 import com.group11.cafe.utils.TimeUtils
 import com.group11.cafe.viewmodel.AttendanceViewModel
+import com.group11.cafe.viewmodel.DashboardViewModel
 import com.group11.cafe.viewmodel.EventViewModel
 import com.group11.cafe.viewmodel.LoginViewModel
 import com.group11.cafe.viewmodel.RegisterViewModel
@@ -63,9 +65,21 @@ import java.util.UUID
 @OptIn(ExperimentalMaterial3Api::class)
 fun AppNavigation() {
     val navController = rememberNavController()
+    val dashboardViewModel: DashboardViewModel = viewModel()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
-    val bottomNavigationItems = bottomNavigationItemsFor(currentRoute)
+    val signedInUserId = FirebaseAuth.getInstance().currentUser?.uid
+    var currentUserRole by remember { mutableStateOf("") }
+    val bottomNavigationItems = if (signedInUserId != null) {
+        bottomNavigationItemsForRole(currentUserRole)
+    } else if (currentRoute in listOf(
+            Screen.ParticipantDashboard.route,
+            Screen.ParticipantSettings.route
+        )) {
+        guestNavigationItems
+    } else {
+        null
+    }
     val rootRoutes = setOf(
         Screen.OrganizerDashboard.route,
         Screen.CrewDashboard.route,
@@ -77,6 +91,17 @@ fun AppNavigation() {
         Screen.OrganizerMembers.route,
         Screen.OrganizerSettings.route
     )
+
+    LaunchedEffect(signedInUserId) {
+        if (signedInUserId == null) {
+            currentUserRole = ""
+            return@LaunchedEffect
+        }
+
+        dashboardViewModel.loadRole {
+            currentUserRole = it.trim()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -254,15 +279,17 @@ fun AppNavigation() {
         }
 
         composable(Screen.ParticipantDashboard.route) {
-            ParticipantDashboard(
-                onViewScheduleClick = {
-                    navController.navigate(Screen.ParticipantEventList.route)
-                }
-            )
+            ParticipantDashboard()
         }
 
         composable(Screen.ParticipantEventsTab.route) {
-            EmptyPage("Events")
+            ParticipantEventsPage(
+                onEventClick = {
+                    navController.navigate(
+                        Screen.ParticipantSchedule.createRoute(it.id)
+                    )
+                }
+            )
         }
 
         composable(Screen.ParticipantSettings.route) {

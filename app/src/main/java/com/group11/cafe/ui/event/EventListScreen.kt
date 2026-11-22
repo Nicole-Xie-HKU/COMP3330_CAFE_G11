@@ -13,10 +13,11 @@ import com.group11.cafe.data.model.Event
 @Composable
 fun EventListScreen(
     events: List<Event>,
-    onEventClick: (Event) -> Unit
+    onEventClick: (Event) -> Unit,
+    modifier: Modifier = Modifier
 ) {
 
-    LazyColumn {
+    LazyColumn(modifier = modifier) {
 
         items(events) { event ->
 

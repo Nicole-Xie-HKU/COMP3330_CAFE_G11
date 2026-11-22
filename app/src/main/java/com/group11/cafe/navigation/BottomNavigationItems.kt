@@ -31,6 +31,19 @@ val participantNavigationItems = listOf(
     )
 )
 
+val guestNavigationItems = listOf(
+    BottomNavigationItem(
+        label = "Home",
+        route = Screen.ParticipantDashboard.route,
+        icon = Icons.Outlined.Home
+    ),
+    BottomNavigationItem(
+        label = "Settings",
+        route = Screen.ParticipantSettings.route,
+        icon = Icons.Outlined.Settings
+    )
+)
+
 val crewNavigationItems = listOf(
     BottomNavigationItem(
         label = "Home",
@@ -72,6 +85,15 @@ fun bottomNavigationItemsFor(route: String?): List<BottomNavigationItem>? {
         in participantNavigationItems.map { it.route } -> participantNavigationItems
         in crewNavigationItems.map { it.route } -> crewNavigationItems
         in organizerNavigationItems.map { it.route } -> organizerNavigationItems
+        else -> null
+    }
+}
+
+fun bottomNavigationItemsForRole(role: String): List<BottomNavigationItem>? {
+    return when (role) {
+        "Organizer" -> organizerNavigationItems
+        "Crew" -> crewNavigationItems
+        "Participant" -> participantNavigationItems
         else -> null
     }
 }
