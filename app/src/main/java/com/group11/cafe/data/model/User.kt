@@ -5,5 +5,6 @@ data class User(
     val name: String = "",
     val email: String = "",
     val role: String = "",
-    val inviteCode: String = ""
+    val inviteCode: String = "",
+    val participantQrCode: String = ""
 )

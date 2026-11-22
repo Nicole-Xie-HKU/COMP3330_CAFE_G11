@@ -6,11 +6,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.group11.cafe.ui.components.DashboardHeader
+import com.group11.cafe.ui.components.ParticipantQrCard
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.group11.cafe.viewmodel.DashboardViewModel
+import androidx.compose.runtime.*
+import com.google.firebase.auth.FirebaseAuth
+import com.group11.cafe.utils.ParticipantQrParser
 
 @Composable
 fun ParticipantDashboard(
     onViewScheduleClick: () -> Unit
 ) {
+    val dashboardViewModel: DashboardViewModel = viewModel()
+    var qrCode by remember { mutableStateOf("") }
+    var isLoadingQr by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            qrCode = ParticipantQrParser.GUEST_QR_CODE
+            isLoadingQr = false
+            return@LaunchedEffect
+        }
+
+        dashboardViewModel.loadCurrentUser(
+            onSuccess = {
+                qrCode = it.participantQrCode
+                isLoadingQr = false
+            },
+            onFailure = {
+                isLoadingQr = false
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -26,6 +53,11 @@ fun ParticipantDashboard(
         )
 
         Spacer(modifier = Modifier.height(20.dp))
+
+        if (!isLoadingQr) {
+            ParticipantQrCard(qrCode = qrCode)
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         Button(onClick = onViewScheduleClick) {
             Text("View Schedule")

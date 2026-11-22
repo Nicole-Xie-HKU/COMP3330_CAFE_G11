@@ -44,6 +44,11 @@ class AuthRepository {
                                 .uppercase()
                         } else {
                             ""
+                        },
+                        participantQrCode = if (role == "Participant") {
+                            "CAFE-${result.user!!.uid}"
+                        } else {
+                            ""
                         }
                     )
 
