@@ -3,15 +3,7 @@ package com.group11.cafe.viewmodel
 import androidx.lifecycle.ViewModel
 import com.group11.cafe.data.model.Event
 import com.group11.cafe.data.repository.EventRepository
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-
-import com.group11.cafe.ui.event.EventDetailsScreen
-import com.group11.cafe.ui.event.EventListScreen
-import com.group11.cafe.ui.event.CreateSessionScreen
-import com.group11.cafe.ui.event.SessionListScreen
-
-import com.group11.cafe.viewmodel.SessionViewModel
+import com.google.firebase.firestore.DocumentSnapshot
 
 class EventViewModel : ViewModel() {
 
@@ -39,6 +31,28 @@ class EventViewModel : ViewModel() {
 
         repository.getEventsForOrganizer(
             organizerId,
+            onSuccess,
+            onFailure
+        )
+    }
+
+    fun getAllEvents(
+        onSuccess: (List<Event>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.getAllEvents(
+            onSuccess,
+            onFailure
+        )
+    }
+
+    fun getEventsPage(
+        lastDocument: DocumentSnapshot?,
+        onSuccess: (List<Event>, DocumentSnapshot?, Boolean) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.getEventsPage(
+            lastDocument,
             onSuccess,
             onFailure
         )

@@ -29,19 +29,31 @@ fun DashboardRouter(
                 "Organizer" -> {
                     navController.navigate(
                         Screen.OrganizerDashboard.route
-                    )
+                    ) {
+                        popUpTo(Screen.Dashboard.route) {
+                            inclusive = true
+                        }
+                    }
                 }
 
                 "Crew" -> {
                     navController.navigate(
                         Screen.CrewDashboard.route
-                    )
+                    ) {
+                        popUpTo(Screen.Dashboard.route) {
+                            inclusive = true
+                        }
+                    }
                 }
 
                 "Participant" -> {
                     navController.navigate(
                         Screen.ParticipantDashboard.route
-                    )
+                    ) {
+                        popUpTo(Screen.Dashboard.route) {
+                            inclusive = true
+                        }
+                    }
                 }
 
                 else -> {
@@ -49,7 +61,11 @@ fun DashboardRouter(
 
                     navController.navigate(
                         Screen.ParticipantDashboard.route
-                    )
+                    ) {
+                        popUpTo(Screen.Dashboard.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             }
         }

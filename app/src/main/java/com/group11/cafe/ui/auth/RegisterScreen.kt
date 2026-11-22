@@ -15,7 +15,9 @@ fun RegisterScreen(
         String,
         String,
         String
-    ) -> Unit
+    ) -> Unit,
+    errorMessage: String? = null,
+    isLoading: Boolean = false
 ) {
 
     var name by remember { mutableStateOf("") }
@@ -92,6 +94,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
+            enabled = !isLoading,
             onClick = {
 
                 Log.d("REGISTER", "Button clicked")
@@ -104,7 +107,16 @@ fun RegisterScreen(
                 )
             }
         ) {
-            Text("Create Account")
+            Text(if (isLoading) "Creating..." else "Create Account")
+        }
+
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
 }

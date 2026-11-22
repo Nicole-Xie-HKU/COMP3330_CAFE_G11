@@ -1,6 +1,8 @@
 package com.group11.cafe.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.Query
 import com.group11.cafe.data.model.Event
 
 class EventRepository {
@@ -45,6 +47,51 @@ class EventRepository {
                     documents.toObjects(Event::class.java)
 
                 onSuccess(events)
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
+    fun getAllEvents(
+        onSuccess: (List<Event>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("events")
+            .get()
+            .addOnSuccessListener { documents ->
+                onSuccess(
+                    documents.toObjects(Event::class.java)
+                )
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
+    fun getEventsPage(
+        lastDocument: DocumentSnapshot?,
+        onSuccess: (List<Event>, DocumentSnapshot?, Boolean) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        var query = firestore
+            .collection("events")
+            .orderBy("name", Query.Direction.ASCENDING)
+            .limit(10)
+
+        if (lastDocument != null) {
+            query = query.startAfter(lastDocument)
+        }
+
+        query
+            .get()
+            .addOnSuccessListener { documents ->
+                onSuccess(
+                    documents.toObjects(Event::class.java),
+                    documents.lastOrNull(),
+                    documents.size() == 10
+                )
             }
             .addOnFailureListener {
                 onFailure(it)

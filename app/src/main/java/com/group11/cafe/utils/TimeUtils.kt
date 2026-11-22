@@ -32,4 +32,16 @@ object TimeUtils {
             time
         }
     }
+
+    fun isAtOrAfter(
+        time: String,
+        otherTime: String
+    ): Boolean {
+        return try {
+            LocalTime.parse(time.trim(), formatter) >=
+                LocalTime.parse(otherTime.trim(), formatter)
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

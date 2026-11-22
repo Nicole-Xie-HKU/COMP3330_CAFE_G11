@@ -1,15 +1,37 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Gradle and Kotlin build state
+.gradle/
+.kotlin/
+**/build/
+
+# Android native build and capture output
+**/.cxx/
+**/.externalNativeBuild/
+**/captures/
+
+# Local SDK and signing configuration
 local.properties
+*.jks
+*.keystore
+key.properties
+signing.properties
+
+# Android Studio and IntelliJ user-specific state
+*.iml
+.idea/.name
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/deploymentTargetSelector.xml
+.idea/deviceManager.xml
+.idea/dictionaries/
+.idea/shelf/
+.idea/sessions/
+.idea/usage.statistics.xml
+
+# Profiling and operating system files
+*.hprof
+.DS_Store
+Thumbs.db

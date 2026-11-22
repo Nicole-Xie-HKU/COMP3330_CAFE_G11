@@ -17,6 +17,24 @@ sealed class Screen(val route: String) {
     object ParticipantDashboard :
         Screen("participant_dashboard")
 
+    object ParticipantEventsTab :
+        Screen("participant_events_tab")
+
+    object ParticipantSettings :
+        Screen("participant_settings")
+
+    object CrewTeam :
+        Screen("crew_team")
+
+    object CrewSettings :
+        Screen("crew_settings")
+
+    object OrganizerMembers :
+        Screen("organizer_members")
+
+    object OrganizerSettings :
+        Screen("organizer_settings")
+
     object CreateEvent :
         Screen("create_event")
 
@@ -45,6 +63,25 @@ sealed class Screen(val route: String) {
         fun createRoute(
             eventId: String
         ) = "create_session/$eventId"
+    }
+
+    object EditSession :
+        Screen("edit_session/{sessionId}") {
+
+        fun createRoute(
+            sessionId: String
+        ) = "edit_session/$sessionId"
+    }
+
+    object ParticipantEventList :
+        Screen("participant_event_list")
+
+    object ParticipantSchedule :
+        Screen("participant_schedule/{eventId}") {
+
+        fun createRoute(
+            eventId: String
+        ) = "participant_schedule/$eventId"
     }
 
     object SessionDetails :

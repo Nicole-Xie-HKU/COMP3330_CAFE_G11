@@ -29,7 +29,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 @Composable
 fun AttendanceScanner(
-    onQrScanned: (String) -> Unit
+    onQrScanned: (String) -> Unit,
+    statusMessage: String? = null
 ) {
     val context = LocalContext.current
 
@@ -59,6 +60,20 @@ fun AttendanceScanner(
             text = "Attendance Scanner",
             style = MaterialTheme.typography.headlineMedium
         )
+
+        Text(
+            text = "Expected QR format: eventId|sessionId|participantId|name",
+            style = MaterialTheme.typography.bodySmall
+        )
+
+        if (statusMessage != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = statusMessage,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -159,6 +174,10 @@ private fun CameraPreview(
                         .build()
 
                 imageAnalysis.setAnalyzer(executor) { imageProxy ->
+                    if (hasScanned.get()) {
+                        imageProxy.close()
+                        return@setAnalyzer
+                    }
 
                     val mediaImage = imageProxy.image
 

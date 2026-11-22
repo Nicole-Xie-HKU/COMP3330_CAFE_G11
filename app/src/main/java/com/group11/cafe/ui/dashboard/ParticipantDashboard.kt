@@ -5,29 +5,58 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.group11.cafe.ui.components.DashboardHeader
+import com.group11.cafe.ui.components.ParticipantQrCard
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.group11.cafe.viewmodel.DashboardViewModel
+import androidx.compose.runtime.*
+import com.group11.cafe.utils.ParticipantQrParser
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun ParticipantDashboard() {
+fun ParticipantDashboard(
+) {
+    val dashboardViewModel: DashboardViewModel = viewModel()
+    var qrCode by remember { mutableStateOf("") }
+    var isLoadingQr by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            qrCode = ParticipantQrParser.GUEST_QR_CODE
+            isLoadingQr = false
+            return@LaunchedEffect
+        }
+
+        dashboardViewModel.loadCurrentUser(
+            onSuccess = {
+                qrCode = it.participantQrCode
+                isLoadingQr = false
+            },
+            onFailure = {
+                isLoadingQr = false
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(
+                horizontal = 20.dp,
+                vertical = 12.dp
+            )
     ) {
 
-        Text(
-            "Participant Dashboard",
-            style = MaterialTheme.typography.headlineMedium
+        DashboardHeader(
+            fallbackRole = "Participant"
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        Button(onClick = {}) {
-            Text("View Schedule")
+        if (!isLoadingQr) {
+            ParticipantQrCard(qrCode = qrCode)
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Button(onClick = {}) {
-            Text("Request Help")
-        }
     }
 }
