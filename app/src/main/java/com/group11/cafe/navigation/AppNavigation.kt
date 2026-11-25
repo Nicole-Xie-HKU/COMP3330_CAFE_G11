@@ -625,7 +625,7 @@ fun AppNavigation() {
             CreateSessionScreen(
                 isLoading = isLoading,
                 errorMessage = errorMessage,
-                onSubmit = { title, location, startTime, endTime ->
+                onSubmit = { title, location, startTime, endTime, fixedTime ->
                     val problem = SessionValidator.check(title, location, startTime, endTime)
                     if (problem != null) {
                         errorMessage = problem
@@ -640,7 +640,8 @@ fun AppNavigation() {
                         title = title.trim(),
                         location = location.trim(),
                         startTime = startTime.trim(),
-                        endTime = endTime.trim()
+                        endTime = endTime.trim(),
+                        fixedTime = fixedTime
                     )
 
                     sessionViewModel.createSession(
@@ -704,9 +705,10 @@ fun AppNavigation() {
                         initialLocation = currentSession.location,
                         initialStartTime = currentSession.startTime,
                         initialEndTime = currentSession.endTime,
+                        initialFixedTime = currentSession.fixedTime,
                         isLoading = isLoading,
                         errorMessage = errorMessage,
-                        onSubmit = { title, location, startTime, endTime ->
+                        onSubmit = { title, location, startTime, endTime, fixedTime ->
                             val problem = SessionValidator.check(title, location, startTime, endTime)
                             if (problem != null) {
                                 errorMessage = problem
@@ -720,7 +722,8 @@ fun AppNavigation() {
                                     title = title.trim(),
                                     location = location.trim(),
                                     startTime = startTime.trim(),
-                                    endTime = endTime.trim()
+                                    endTime = endTime.trim(),
+                                    fixedTime = fixedTime
                                 ),
                                 onSuccess = {
                                     isLoading = false

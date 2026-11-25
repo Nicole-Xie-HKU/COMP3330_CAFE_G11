@@ -6,5 +6,7 @@ data class Session(
     val title: String = "",
     val location: String = "",
     val startTime: String = "",
-    val endTime: String = ""
+    val endTime: String = "",
+    val fixedTime: Boolean = false,
+    val movedMinutes: Int = 0
 )

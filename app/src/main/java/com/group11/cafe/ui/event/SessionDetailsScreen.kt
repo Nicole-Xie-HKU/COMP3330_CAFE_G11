@@ -40,6 +40,10 @@ fun SessionDetailsScreen(
             "Time: ${session.startTime} - ${session.endTime}"
         )
 
+        if (session.fixedTime) {
+            Text("Fixed time")
+        }
+
         Spacer(
             modifier = Modifier.height(24.dp)
         )
