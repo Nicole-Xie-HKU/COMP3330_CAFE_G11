@@ -1,5 +1,6 @@
 package com.group11.cafe.ui.event
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -177,19 +178,26 @@ fun ParticipantScheduleScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         if (isLoading) {
-            CircularProgressIndicator()
+            Box(modifier = Modifier.weight(1f)) {
+                CircularProgressIndicator()
+            }
         } else if (errorMessage != null) {
             Text(
                 text = errorMessage,
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.weight(1f)
             )
         } else if (sessions.isEmpty()) {
-            Text("No sessions have been published yet.")
+            Text(
+                text = "No sessions have been published yet.",
+                modifier = Modifier.weight(1f)
+            )
         } else {
             SessionListScreen(
                 sessions = sessions,
                 eventDate = event.date,
-                onSessionClick = onSessionClick
+                onSessionClick = onSessionClick,
+                modifier = Modifier.weight(1f)
             )
         }
     }

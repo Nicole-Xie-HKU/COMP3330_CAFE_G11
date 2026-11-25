@@ -19,7 +19,8 @@ import androidx.compose.foundation.clickable
 fun SessionListScreen(
     sessions: List<Session>,
     eventDate: String,
-    onSessionClick: (Session) -> Unit
+    onSessionClick: (Session) -> Unit,
+    modifier: Modifier = Modifier
 ) {
 
     val now = currentTime()
@@ -29,7 +30,7 @@ fun SessionListScreen(
         start != null && start > now
     }
 
-    LazyColumn {
+    LazyColumn(modifier = modifier) {
 
         items(sortedSessions) { session ->
 
