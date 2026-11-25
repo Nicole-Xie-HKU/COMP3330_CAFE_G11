@@ -100,6 +100,14 @@ sealed class Screen(val route: String) {
         ) = "session_details/$sessionId"
     }
 
+    object SessionTasks :
+        Screen("session_tasks/{sessionId}") {
+
+        fun createRoute(
+            sessionId: String
+        ) = "session_tasks/$sessionId"
+    }
+
     object ShiftSchedule :
         Screen("shift_schedule/{sessionId}") {
 

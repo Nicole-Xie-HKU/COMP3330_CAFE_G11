@@ -55,6 +55,7 @@ import com.group11.cafe.ui.components.AppBackButton
 import com.group11.cafe.ui.components.AppBottomNavigationBar
 import com.group11.cafe.ui.components.SettingsPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
+import com.group11.cafe.ui.task.SessionTasksPage
 import com.group11.cafe.utils.SessionValidator
 import com.group11.cafe.utils.TimeUtils
 import com.group11.cafe.viewmodel.DashboardViewModel
@@ -777,6 +778,11 @@ fun AppNavigation() {
                                 )
                             )
                         },
+                        onTasksClick = {
+                            navController.navigate(
+                                Screen.SessionTasks.createRoute(currentSession.id)
+                            )
+                        },
                         onEditClick = {
                             navController.navigate(
                                 Screen.EditSession.createRoute(currentSession.id)
@@ -800,6 +806,18 @@ fun AppNavigation() {
                     )
                 }
             }
+        }
+
+        composable(
+            route = Screen.SessionTasks.route,
+            arguments = listOf(
+                navArgument("sessionId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            SessionTasksPage(
+                sessionId = backStackEntry.arguments?.getString("sessionId").orEmpty(),
+                canEdit = currentUserRole == UserRole.ORGANIZER
+            )
         }
 
         composable(
