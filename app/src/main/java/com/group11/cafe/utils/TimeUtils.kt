@@ -2,6 +2,7 @@ package com.group11.cafe.utils
 
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 object TimeUtils {
@@ -40,6 +41,18 @@ object TimeUtils {
             true
         } catch (e: Exception) {
             false
+        }
+    }
+
+    fun toMillis(date: String, time: String): Long? {
+        return try {
+            LocalDate.parse(date.trim())
+                .atTime(LocalTime.parse(time.trim(), formatter))
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+        } catch (e: Exception) {
+            null
         }
     }
 

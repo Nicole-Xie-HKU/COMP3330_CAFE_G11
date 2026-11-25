@@ -28,4 +28,13 @@ class TimeUtilsTest {
             times.sortedBy { TimeUtils.toMinutes(it) }
         )
     }
+
+    @Test
+    fun toMillis_needsGoodDateAndTime() {
+        val start = TimeUtils.toMillis("2026-11-30", "9:30")!!
+        val end = TimeUtils.toMillis("2026-11-30", "10:00")!!
+
+        assertEquals(30 * 60 * 1000L, end - start)
+        assertEquals(null, TimeUtils.toMillis("", "9:30"))
+    }
 }

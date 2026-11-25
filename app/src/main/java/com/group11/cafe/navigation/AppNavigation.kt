@@ -46,6 +46,7 @@ import com.group11.cafe.ui.event.EventDetailsScreen
 import com.group11.cafe.ui.event.EventListScreen
 import com.group11.cafe.ui.event.ParticipantScheduleScreen
 import com.group11.cafe.ui.event.ParticipantEventsPage
+import com.group11.cafe.ui.event.ParticipantSessionPage
 import com.group11.cafe.ui.event.SessionDetailsScreen
 import com.group11.cafe.ui.event.SessionListScreen
 import com.group11.cafe.ui.event.ShiftScheduleScreen
@@ -354,7 +355,23 @@ fun AppNavigation() {
             ParticipantScheduleScreen(
                 sessions = sessions,
                 isLoading = isLoading,
-                errorMessage = errorMessage
+                errorMessage = errorMessage,
+                onSessionClick = {
+                    navController.navigate(
+                        Screen.ParticipantSession.createRoute(it.id)
+                    )
+                }
+            )
+        }
+
+        composable(
+            route = Screen.ParticipantSession.route,
+            arguments = listOf(
+                navArgument("sessionId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            ParticipantSessionPage(
+                sessionId = backStackEntry.arguments?.getString("sessionId").orEmpty()
             )
         }
 

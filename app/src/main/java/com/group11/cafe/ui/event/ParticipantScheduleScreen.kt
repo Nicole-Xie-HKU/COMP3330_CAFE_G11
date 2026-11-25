@@ -17,7 +17,8 @@ import com.group11.cafe.data.model.Session
 fun ParticipantScheduleScreen(
     sessions: List<Session>,
     isLoading: Boolean,
-    errorMessage: String?
+    errorMessage: String?,
+    onSessionClick: (Session) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -43,7 +44,7 @@ fun ParticipantScheduleScreen(
         } else {
             SessionListScreen(
                 sessions = sessions,
-                onSessionClick = {}
+                onSessionClick = onSessionClick
             )
         }
     }
