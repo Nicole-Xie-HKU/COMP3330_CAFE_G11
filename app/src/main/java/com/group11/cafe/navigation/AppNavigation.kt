@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.group11.cafe.data.model.Event
 import com.group11.cafe.data.model.Session
 import com.group11.cafe.data.model.UserRole
+import com.group11.cafe.ui.attendance.AttendanceListPage
 import com.group11.cafe.ui.attendance.AttendanceScannerPage
 import com.group11.cafe.ui.auth.LoginScreen
 import com.group11.cafe.ui.auth.RegisterScreen
@@ -248,6 +249,19 @@ fun AppNavigation() {
             )
         ) { backStackEntry ->
             AttendanceScannerPage(
+                eventId = backStackEntry.arguments?.getString("eventId").orEmpty(),
+                sessionId = backStackEntry.arguments?.getString("sessionId").orEmpty()
+            )
+        }
+
+        composable(
+            route = Screen.AttendanceList.route,
+            arguments = listOf(
+                navArgument("eventId") { type = NavType.StringType },
+                navArgument("sessionId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            AttendanceListPage(
                 eventId = backStackEntry.arguments?.getString("eventId").orEmpty(),
                 sessionId = backStackEntry.arguments?.getString("sessionId").orEmpty()
             )
@@ -710,6 +724,14 @@ fun AppNavigation() {
                         onScanClick = {
                             navController.navigate(
                                 Screen.AttendanceScanner.createRoute(
+                                    currentSession.eventId,
+                                    currentSession.id
+                                )
+                            )
+                        },
+                        onAttendanceClick = {
+                            navController.navigate(
+                                Screen.AttendanceList.createRoute(
                                     currentSession.eventId,
                                     currentSession.id
                                 )

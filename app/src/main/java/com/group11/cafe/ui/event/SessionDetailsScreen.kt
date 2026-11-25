@@ -12,6 +12,7 @@ fun SessionDetailsScreen(
     session: Session,
     canEdit: Boolean,
     onScanClick: () -> Unit,
+    onAttendanceClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onShiftClick: () -> Unit
@@ -46,6 +47,16 @@ fun SessionDetailsScreen(
             onClick = onScanClick
         ) {
             Text("Scan Check-ins")
+        }
+
+        Spacer(
+            modifier = Modifier.height(12.dp)
+        )
+
+        Button(
+            onClick = onAttendanceClick
+        ) {
+            Text("Attendance")
         }
 
         Spacer(
