@@ -52,6 +52,7 @@ import com.group11.cafe.ui.components.AppBottomNavigationBar
 import com.group11.cafe.ui.components.EmptyPage
 import com.group11.cafe.ui.components.SettingsPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
+import com.group11.cafe.ui.task.TaskManagementScreen
 import com.group11.cafe.utils.TimeUtils
 import com.group11.cafe.viewmodel.AttendanceViewModel
 import com.group11.cafe.viewmodel.DashboardViewModel
@@ -226,6 +227,9 @@ fun AppNavigation() {
                 },
                 onViewEventsClick = {
                     navController.navigate(Screen.EventList.route)
+                },
+                onManageTasksClick = {
+                    navController.navigate(Screen.OrganizerTasks.route)
                 }
             )
         }
@@ -234,8 +238,19 @@ fun AppNavigation() {
             CrewDashboard(
                 onAttendanceScannerClick = {
                     navController.navigate(Screen.AttendanceScanner.route)
+                },
+                onMyTasksClick = {
+                    navController.navigate(Screen.CrewTasks.route)
                 }
             )
+        }
+
+        composable(Screen.OrganizerTasks.route) {
+            TaskManagementScreen(isOrganizer = true)
+        }
+
+        composable(Screen.CrewTasks.route) {
+            TaskManagementScreen(isOrganizer = false)
         }
 
         composable(Screen.AttendanceScanner.route) {

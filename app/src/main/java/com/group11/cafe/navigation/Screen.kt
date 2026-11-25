@@ -101,4 +101,10 @@ sealed class Screen(val route: String) {
     }
     object AttendanceScanner :
         Screen("attendance_scanner")
+
+    object OrganizerTasks :
+        Screen("organizer_tasks")
+
+    object CrewTasks :
+        Screen("crew_tasks")
 }
