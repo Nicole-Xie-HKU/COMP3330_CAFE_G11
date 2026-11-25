@@ -51,6 +51,11 @@ val crewNavigationItems = listOf(
         icon = Icons.Outlined.Home
     ),
     BottomNavigationItem(
+        label = "Events",
+        route = Screen.CrewEvents.route,
+        icon = Icons.Outlined.Event
+    ),
+    BottomNavigationItem(
         label = "Team",
         route = Screen.CrewTeam.route,
         icon = Icons.Outlined.Groups

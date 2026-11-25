@@ -10,6 +10,7 @@ import com.group11.cafe.data.model.Session
 @Composable
 fun SessionDetailsScreen(
     session: Session,
+    canEdit: Boolean,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onShiftClick: () -> Unit
@@ -40,30 +41,32 @@ fun SessionDetailsScreen(
             modifier = Modifier.height(24.dp)
         )
 
-        Button(
-            onClick = onEditClick
-        ) {
-            Text("Edit Session")
-        }
+        if (canEdit) {
+            Button(
+                onClick = onEditClick
+            ) {
+                Text("Edit Session")
+            }
 
-        Spacer(
-            modifier = Modifier.height(12.dp)
-        )
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
 
-        Button(
-            onClick = onDeleteClick
-        ) {
-            Text("Delete Session")
-        }
+            Button(
+                onClick = onDeleteClick
+            ) {
+                Text("Delete Session")
+            }
 
-        Spacer(
-            modifier = Modifier.height(12.dp)
-        )
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
 
-        Button(
-            onClick = onShiftClick
-        ) {
-            Text("Shift Following Sessions")
+            Button(
+                onClick = onShiftClick
+            ) {
+                Text("Shift Following Sessions")
+            }
         }
     }
 }

@@ -53,6 +53,30 @@ class EventRepository {
             }
     }
 
+    fun getEventsForOrganizers(
+        organizerIds: List<String>,
+        onSuccess: (List<Event>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        if (organizerIds.isEmpty()) {
+            onSuccess(emptyList())
+            return
+        }
+
+        firestore
+            .collection("events")
+            .whereIn("organizerId", organizerIds)
+            .get()
+            .addOnSuccessListener { documents ->
+                onSuccess(
+                    documents.toObjects(Event::class.java)
+                )
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
     fun getAllEvents(
         onSuccess: (List<Event>) -> Unit,
         onFailure: (Exception) -> Unit

@@ -30,9 +30,11 @@ import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
 import com.group11.cafe.data.model.Event
 import com.group11.cafe.data.model.Session
+import com.group11.cafe.data.model.UserRole
 import com.group11.cafe.ui.attendance.AttendanceScanner
 import com.group11.cafe.ui.auth.LoginScreen
 import com.group11.cafe.ui.auth.RegisterScreen
+import com.group11.cafe.ui.crew.CrewEventsPage
 import com.group11.cafe.ui.dashboard.CrewDashboard
 import com.group11.cafe.ui.dashboard.DashboardRouter
 import com.group11.cafe.ui.dashboard.OrganizerDashboard
@@ -86,6 +88,7 @@ fun AppNavigation() {
         Screen.ParticipantDashboard.route,
         Screen.ParticipantEventsTab.route,
         Screen.ParticipantSettings.route,
+        Screen.CrewEvents.route,
         Screen.CrewTeam.route,
         Screen.CrewSettings.route,
         Screen.OrganizerMembers.route,
@@ -296,6 +299,16 @@ fun AppNavigation() {
             SettingsPage(
                 onLogoutClick = {
                     logout(navController)
+                }
+            )
+        }
+
+        composable(Screen.CrewEvents.route) {
+            CrewEventsPage(
+                onEventClick = {
+                    navController.navigate(
+                        Screen.EventDetails.createRoute(it.id)
+                    )
                 }
             )
         }
@@ -528,17 +541,19 @@ fun AppNavigation() {
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Button(
-                    onClick = {
-                        navController.navigate(
-                            Screen.CreateSession.createRoute(eventId)
-                        )
+                if (currentUserRole == UserRole.ORGANIZER) {
+                    Button(
+                        onClick = {
+                            navController.navigate(
+                                Screen.CreateSession.createRoute(eventId)
+                            )
+                        }
+                    ) {
+                        Text("Add Session")
                     }
-                ) {
-                    Text("Add Session")
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
 
                 if (isLoading) {
                     CircularProgressIndicator()
@@ -719,6 +734,7 @@ fun AppNavigation() {
                 session?.let { currentSession ->
                     SessionDetailsScreen(
                         session = currentSession,
+                        canEdit = currentUserRole == UserRole.ORGANIZER,
                         onEditClick = {
                             navController.navigate(
                                 Screen.EditSession.createRoute(currentSession.id)

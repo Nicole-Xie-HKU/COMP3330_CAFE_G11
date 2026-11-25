@@ -36,6 +36,18 @@ class EventViewModel : ViewModel() {
         )
     }
 
+    fun getEventsForOrganizers(
+        organizerIds: List<String>,
+        onSuccess: (List<Event>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.getEventsForOrganizers(
+            organizerIds,
+            onSuccess,
+            onFailure
+        )
+    }
+
     fun getAllEvents(
         onSuccess: (List<Event>) -> Unit,
         onFailure: (Exception) -> Unit
