@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -370,10 +371,10 @@ fun AppNavigation() {
             var isLoading by remember { mutableStateOf(true) }
             var errorMessage by remember { mutableStateOf<String?>(null) }
 
-            LaunchedEffect(eventId) {
-                sessionViewModel.getSessionsForEvent(
+            DisposableEffect(eventId) {
+                val listener = sessionViewModel.listenToSessions(
                     eventId,
-                    onSuccess = {
+                    onChange = {
                         sessions = it
                         isLoading = false
                     },
@@ -382,6 +383,10 @@ fun AppNavigation() {
                         isLoading = false
                     }
                 )
+
+                onDispose {
+                    listener.remove()
+                }
             }
 
             ParticipantScheduleScreen(
@@ -557,10 +562,10 @@ fun AppNavigation() {
             var isLoading by remember { mutableStateOf(true) }
             var errorMessage by remember { mutableStateOf<String?>(null) }
 
-            LaunchedEffect(eventId) {
-                sessionViewModel.getSessionsForEvent(
+            DisposableEffect(eventId) {
+                val listener = sessionViewModel.listenToSessions(
                     eventId,
-                    onSuccess = {
+                    onChange = {
                         sessions = it
                         isLoading = false
                     },
@@ -569,6 +574,10 @@ fun AppNavigation() {
                         isLoading = false
                     }
                 )
+
+                onDispose {
+                    listener.remove()
+                }
             }
 
             Column(
