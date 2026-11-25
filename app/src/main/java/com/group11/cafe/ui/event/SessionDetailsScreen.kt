@@ -11,6 +11,7 @@ import com.group11.cafe.data.model.Session
 fun SessionDetailsScreen(
     session: Session,
     canEdit: Boolean,
+    onScanClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onShiftClick: () -> Unit
@@ -39,6 +40,16 @@ fun SessionDetailsScreen(
 
         Spacer(
             modifier = Modifier.height(24.dp)
+        )
+
+        Button(
+            onClick = onScanClick
+        ) {
+            Text("Scan Check-ins")
+        }
+
+        Spacer(
+            modifier = Modifier.height(12.dp)
         )
 
         if (canEdit) {

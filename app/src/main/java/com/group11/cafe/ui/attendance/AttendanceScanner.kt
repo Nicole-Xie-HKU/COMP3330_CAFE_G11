@@ -61,11 +61,6 @@ fun AttendanceScanner(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Text(
-            text = "Expected QR format: eventId|sessionId|participantId|name",
-            style = MaterialTheme.typography.bodySmall
-        )
-
         if (statusMessage != null) {
             Spacer(modifier = Modifier.height(8.dp))
 

@@ -31,7 +31,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.group11.cafe.data.model.Event
 import com.group11.cafe.data.model.Session
 import com.group11.cafe.data.model.UserRole
-import com.group11.cafe.ui.attendance.AttendanceScanner
+import com.group11.cafe.ui.attendance.AttendanceScannerPage
 import com.group11.cafe.ui.auth.LoginScreen
 import com.group11.cafe.ui.auth.RegisterScreen
 import com.group11.cafe.ui.crew.CrewEventsPage
@@ -55,7 +55,6 @@ import com.group11.cafe.ui.components.SettingsPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
 import com.group11.cafe.utils.SessionValidator
 import com.group11.cafe.utils.TimeUtils
-import com.group11.cafe.viewmodel.AttendanceViewModel
 import com.group11.cafe.viewmodel.DashboardViewModel
 import com.group11.cafe.viewmodel.EventViewModel
 import com.group11.cafe.viewmodel.LoginViewModel
@@ -235,49 +234,22 @@ fun AppNavigation() {
 
         composable(Screen.CrewDashboard.route) {
             CrewDashboard(
-                onAttendanceScannerClick = {
-                    navController.navigate(Screen.AttendanceScanner.route)
+                onEventsClick = {
+                    navController.navigate(Screen.CrewEvents.route)
                 }
             )
         }
 
-        composable(Screen.AttendanceScanner.route) {
-            val attendanceViewModel: AttendanceViewModel = viewModel()
-            var statusMessage by remember { mutableStateOf<String?>(null) }
-
-            AttendanceScanner(
-                statusMessage = statusMessage,
-                onQrScanned = { qrValue ->
-                    val values = qrValue.split("|", limit = 4)
-
-                    if (values.size < 3 || values.take(3).any { it.isBlank() }) {
-                        statusMessage = "Invalid QR code. Check the expected format."
-                        return@AttendanceScanner
-                    }
-
-                    statusMessage = "Checking participant in..."
-                    attendanceViewModel.checkIn(
-                        eventId = values[0].trim(),
-                        sessionId = values[1].trim(),
-                        participantId = values[2].trim(),
-                        participantName = values.getOrNull(3)?.trim().orEmpty(),
-                        checkedInBy = FirebaseAuth
-                            .getInstance()
-                            .currentUser
-                            ?.uid
-                            .orEmpty(),
-                        onSuccess = { isNewCheckIn ->
-                            statusMessage = if (isNewCheckIn) {
-                                "Participant checked in successfully."
-                            } else {
-                                "This participant is already checked in."
-                            }
-                        },
-                        onFailure = {
-                            statusMessage = it.message ?: "Could not check in participant."
-                        }
-                    )
-                }
+        composable(
+            route = Screen.AttendanceScanner.route,
+            arguments = listOf(
+                navArgument("eventId") { type = NavType.StringType },
+                navArgument("sessionId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            AttendanceScannerPage(
+                eventId = backStackEntry.arguments?.getString("eventId").orEmpty(),
+                sessionId = backStackEntry.arguments?.getString("sessionId").orEmpty()
             )
         }
 
@@ -735,6 +707,14 @@ fun AppNavigation() {
                     SessionDetailsScreen(
                         session = currentSession,
                         canEdit = currentUserRole == UserRole.ORGANIZER,
+                        onScanClick = {
+                            navController.navigate(
+                                Screen.AttendanceScanner.createRoute(
+                                    currentSession.eventId,
+                                    currentSession.id
+                                )
+                            )
+                        },
                         onEditClick = {
                             navController.navigate(
                                 Screen.EditSession.createRoute(currentSession.id)

@@ -9,7 +9,7 @@ import com.group11.cafe.ui.components.DashboardHeader
 
 @Composable
 fun CrewDashboard(
-    onAttendanceScannerClick: () -> Unit
+    onEventsClick: () -> Unit
 ) {
 
     Column(
@@ -29,9 +29,9 @@ fun CrewDashboard(
 
 
         Button(
-            onClick = onAttendanceScannerClick
+            onClick = onEventsClick
         ) {
-            Text("Attendance Scanner")
+            Text("Events and Check-ins")
         }
     }
 }

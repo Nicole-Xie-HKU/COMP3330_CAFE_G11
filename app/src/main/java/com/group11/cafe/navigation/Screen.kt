@@ -99,6 +99,13 @@ sealed class Screen(val route: String) {
             sessionId: String
         ) = "shift_schedule/$sessionId"
     }
+
     object AttendanceScanner :
-        Screen("attendance_scanner")
+        Screen("attendance_scanner/{eventId}/{sessionId}") {
+
+        fun createRoute(
+            eventId: String,
+            sessionId: String
+        ) = "attendance_scanner/$eventId/$sessionId"
+    }
 }
