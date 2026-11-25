@@ -1,6 +1,7 @@
 package com.group11.cafe.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.group11.cafe.data.model.Session
 
 class SessionRepository {
@@ -45,6 +46,23 @@ class SessionRepository {
             }
             .addOnFailureListener {
                 onFailure(it)
+            }
+    }
+
+    fun listenToSessions(
+        eventId: String,
+        onChange: (List<Session>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return firestore
+            .collection("sessions")
+            .whereEqualTo("eventId", eventId)
+            .addSnapshotListener { documents, error ->
+                if (error != null) {
+                    onFailure(error)
+                } else if (documents != null) {
+                    onChange(documents.toObjects(Session::class.java))
+                }
             }
     }
 
@@ -99,8 +117,10 @@ class SessionRepository {
                 val session =
                     it.toObject(Session::class.java)
 
-                if(session != null) {
+                if (session != null) {
                     onSuccess(session)
+                } else {
+                    onFailure(Exception("Session not found."))
                 }
             }
             .addOnFailureListener {

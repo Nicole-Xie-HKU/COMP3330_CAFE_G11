@@ -1,6 +1,7 @@
 package com.group11.cafe.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.group11.cafe.data.model.OrganizationMember
 import com.group11.cafe.data.model.User
 
@@ -30,15 +31,15 @@ class OrganizationRepository {
                     return@addOnSuccessListener
                 }
 
-                val member = OrganizationMember(
-                    organizerId = organizer.id,
-                    crewId = crewId
+                val member = mapOf(
+                    "organizerId" to organizer.id,
+                    "crewId" to crewId
                 )
 
                 firestore
                     .collection("organizationMembers")
                     .document("${organizer.id}_$crewId")
-                    .set(member)
+                    .set(member, SetOptions.merge())
                     .addOnSuccessListener {
                         onSuccess(organizer)
                     }
@@ -89,6 +90,59 @@ class OrganizationRepository {
                     onSuccess = onSuccess,
                     onFailure = onFailure
                 )
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
+    fun getMembershipsForOrganizer(
+        organizerId: String,
+        onSuccess: (List<OrganizationMember>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("organizationMembers")
+            .whereEqualTo("organizerId", organizerId)
+            .get()
+            .addOnSuccessListener { documents ->
+                onSuccess(documents.toObjects(OrganizationMember::class.java))
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
+    fun getMembershipsForCrew(
+        crewId: String,
+        onSuccess: (List<OrganizationMember>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("organizationMembers")
+            .whereEqualTo("crewId", crewId)
+            .get()
+            .addOnSuccessListener { documents ->
+                onSuccess(documents.toObjects(OrganizationMember::class.java))
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
+    fun setTeamName(
+        organizerId: String,
+        crewId: String,
+        teamName: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("organizationMembers")
+            .document("${organizerId}_$crewId")
+            .update("teamName", teamName)
+            .addOnSuccessListener {
+                onSuccess()
             }
             .addOnFailureListener {
                 onFailure(it)

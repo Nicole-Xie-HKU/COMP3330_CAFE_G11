@@ -18,4 +18,50 @@ class TimeUtilsTest {
         assertTrue(TimeUtils.isAtOrAfter("10:00", "9:30"))
         assertFalse(TimeUtils.isAtOrAfter("9:30", "10:00"))
     }
+
+    @Test
+    fun toMinutes_sortsNineBeforeTen() {
+        val times = listOf("10:00", "9:30", "14:15")
+
+        assertEquals(
+            listOf("9:30", "10:00", "14:15"),
+            times.sortedBy { TimeUtils.toMinutes(it) }
+        )
+    }
+
+    @Test
+    fun toMillis_needsGoodDateAndTime() {
+        val start = TimeUtils.toMillis("2026-11-30", "9:30")!!
+        val end = TimeUtils.toMillis("2026-11-30", "10:00")!!
+
+        assertEquals(30 * 60 * 1000L, end - start)
+        assertEquals(null, TimeUtils.toMillis("", "9:30"))
+    }
+
+    @Test
+    fun taskMovesWithItsSession() {
+        val shiftedStart = TimeUtils.addMinutes("14:00", 15)
+
+        assertEquals("13:30", TimeUtils.addMinutes("14:00", -30))
+        assertEquals("13:45", TimeUtils.addMinutes(shiftedStart, -30))
+    }
+
+    @Test
+    fun timeLeft_countsDown() {
+        val now = TimeUtils.toMillis("2026-11-30", "9:00")!!
+
+        assertEquals("in 30 min", TimeUtils.timeLeft("2026-11-30", "9:30", now))
+        assertEquals("in 2 h", TimeUtils.timeLeft("2026-11-30", "11:15", now))
+        assertEquals("overdue", TimeUtils.timeLeft("2026-11-30", "8:59", now))
+        assertEquals("", TimeUtils.timeLeft("", "9:30", now))
+    }
+
+    @Test
+    fun isNow_checksStartAndEnd() {
+        val now = TimeUtils.toMillis("2026-11-30", "9:45")!!
+
+        assertTrue(TimeUtils.isNow("2026-11-30", "9:30", "10:00", now))
+        assertFalse(TimeUtils.isNow("2026-11-30", "10:00", "10:30", now))
+        assertFalse(TimeUtils.isNow("2026-12-01", "9:30", "10:00", now))
+    }
 }

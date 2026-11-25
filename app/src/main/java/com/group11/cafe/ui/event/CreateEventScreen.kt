@@ -8,7 +8,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CreateEventScreen(
+    errorMessage: String? = null,
     onCreateEvent: (
+        String,
         String,
         String
     ) -> Unit
@@ -19,6 +21,10 @@ fun CreateEventScreen(
     }
 
     var eventDescription by remember {
+        mutableStateOf("")
+    }
+
+    var eventDate by remember {
         mutableStateOf("")
     }
 
@@ -57,13 +63,35 @@ fun CreateEventScreen(
             }
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = eventDate,
+            onValueChange = {
+                eventDate = it
+            },
+            label = {
+                Text("Date (e.g. 2026-11-30)")
+            }
+        )
+
+        if (errorMessage != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
                 onCreateEvent(
                     eventName,
-                    eventDescription
+                    eventDescription,
+                    eventDate
                 )
             }
         ) {

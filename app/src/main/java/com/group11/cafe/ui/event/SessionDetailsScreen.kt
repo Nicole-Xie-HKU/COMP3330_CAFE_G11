@@ -10,6 +10,10 @@ import com.group11.cafe.data.model.Session
 @Composable
 fun SessionDetailsScreen(
     session: Session,
+    canEdit: Boolean,
+    onScanClick: () -> Unit,
+    onAttendanceClick: () -> Unit,
+    onTasksClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onShiftClick: () -> Unit
@@ -36,14 +40,18 @@ fun SessionDetailsScreen(
             "Time: ${session.startTime} - ${session.endTime}"
         )
 
+        if (session.fixedTime) {
+            Text("Fixed time")
+        }
+
         Spacer(
             modifier = Modifier.height(24.dp)
         )
 
         Button(
-            onClick = onEditClick
+            onClick = onScanClick
         ) {
-            Text("Edit Session")
+            Text("Scan Check-ins")
         }
 
         Spacer(
@@ -51,9 +59,9 @@ fun SessionDetailsScreen(
         )
 
         Button(
-            onClick = onDeleteClick
+            onClick = onAttendanceClick
         ) {
-            Text("Delete Session")
+            Text("Attendance")
         }
 
         Spacer(
@@ -61,9 +69,41 @@ fun SessionDetailsScreen(
         )
 
         Button(
-            onClick = onShiftClick
+            onClick = onTasksClick
         ) {
-            Text("Shift Following Sessions")
+            Text("Tasks")
+        }
+
+        Spacer(
+            modifier = Modifier.height(12.dp)
+        )
+
+        if (canEdit) {
+            Button(
+                onClick = onEditClick
+            ) {
+                Text("Edit Session")
+            }
+
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
+
+            Button(
+                onClick = onDeleteClick
+            ) {
+                Text("Delete Session")
+            }
+
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
+
+            Button(
+                onClick = onShiftClick
+            ) {
+                Text("Running Late or Early")
+            }
         }
     }
 }

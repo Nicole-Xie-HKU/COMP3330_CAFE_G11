@@ -23,6 +23,12 @@ sealed class Screen(val route: String) {
     object ParticipantSettings :
         Screen("participant_settings")
 
+    object MyTasks :
+        Screen("my_tasks")
+
+    object CrewEvents :
+        Screen("crew_events")
+
     object CrewTeam :
         Screen("crew_team")
 
@@ -49,6 +55,30 @@ sealed class Screen(val route: String) {
         ) = "event_details/$eventId"
     }
 
+    object Announcements :
+        Screen("announcements/{eventId}") {
+
+        fun createRoute(
+            eventId: String
+        ) = "announcements/$eventId"
+    }
+
+    object AskHelp :
+        Screen("ask_help/{eventId}") {
+
+        fun createRoute(
+            eventId: String
+        ) = "ask_help/$eventId"
+    }
+
+    object HelpList :
+        Screen("help_list/{eventId}") {
+
+        fun createRoute(
+            eventId: String
+        ) = "help_list/$eventId"
+    }
+
     object SessionList :
         Screen("session_list/{eventId}") {
 
@@ -73,15 +103,20 @@ sealed class Screen(val route: String) {
         ) = "edit_session/$sessionId"
     }
 
-    object ParticipantEventList :
-        Screen("participant_event_list")
-
     object ParticipantSchedule :
         Screen("participant_schedule/{eventId}") {
 
         fun createRoute(
             eventId: String
         ) = "participant_schedule/$eventId"
+    }
+
+    object ParticipantSession :
+        Screen("participant_session/{sessionId}") {
+
+        fun createRoute(
+            sessionId: String
+        ) = "participant_session/$sessionId"
     }
 
     object SessionDetails :
@@ -92,6 +127,14 @@ sealed class Screen(val route: String) {
         ) = "session_details/$sessionId"
     }
 
+    object SessionTasks :
+        Screen("session_tasks/{sessionId}") {
+
+        fun createRoute(
+            sessionId: String
+        ) = "session_tasks/$sessionId"
+    }
+
     object ShiftSchedule :
         Screen("shift_schedule/{sessionId}") {
 
@@ -99,6 +142,22 @@ sealed class Screen(val route: String) {
             sessionId: String
         ) = "shift_schedule/$sessionId"
     }
+
     object AttendanceScanner :
-        Screen("attendance_scanner")
+        Screen("attendance_scanner/{eventId}/{sessionId}") {
+
+        fun createRoute(
+            eventId: String,
+            sessionId: String
+        ) = "attendance_scanner/$eventId/$sessionId"
+    }
+
+    object AttendanceList :
+        Screen("attendance_list/{eventId}/{sessionId}") {
+
+        fun createRoute(
+            eventId: String,
+            sessionId: String
+        ) = "attendance_list/$eventId/$sessionId"
+    }
 }

@@ -7,6 +7,16 @@ class LoginViewModel : ViewModel() {
 
     private val repository = AuthRepository()
 
+    fun loginAsGuest(
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.loginAsGuest(
+            onSuccess,
+            onFailure
+        )
+    }
+
     fun login(
         email: String,
         password: String,

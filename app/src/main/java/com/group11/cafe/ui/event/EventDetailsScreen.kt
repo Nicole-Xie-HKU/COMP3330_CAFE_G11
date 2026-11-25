@@ -10,6 +10,8 @@ import com.group11.cafe.data.model.Event
 @Composable
 fun EventDetailsScreen(
     event: Event,
+    onAnnouncementsClick: () -> Unit,
+    onHelpClick: () -> Unit,
     onViewSessionsClick: () -> Unit
 ) {
 
@@ -30,6 +32,10 @@ fun EventDetailsScreen(
 
         Text(event.description)
 
+        if (event.date.isNotBlank()) {
+            Text("Date: ${event.date}")
+        }
+
         Spacer(
             modifier = Modifier.height(24.dp)
         )
@@ -38,6 +44,18 @@ fun EventDetailsScreen(
             onClick = onViewSessionsClick
         ) {
             Text("Sessions")
+        }
+
+        Button(
+            onClick = onAnnouncementsClick
+        ) {
+            Text("Announcements")
+        }
+
+        Button(
+            onClick = onHelpClick
+        ) {
+            Text("Help Requests")
         }
     }
 }

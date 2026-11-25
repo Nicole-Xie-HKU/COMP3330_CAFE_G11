@@ -3,6 +3,7 @@ package com.group11.cafe.ui.event
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -14,13 +15,15 @@ fun CreateSessionScreen(
     initialLocation: String = "",
     initialStartTime: String = "",
     initialEndTime: String = "",
+    initialFixedTime: Boolean = false,
     errorMessage: String? = null,
     isLoading: Boolean = false,
     onSubmit: (
         String,
         String,
         String,
-        String
+        String,
+        Boolean
     ) -> Unit
 ) {
 
@@ -38,6 +41,10 @@ fun CreateSessionScreen(
 
     var endTime by remember {
         mutableStateOf(initialEndTime)
+    }
+
+    var fixedTime by remember {
+        mutableStateOf(initialFixedTime)
     }
 
     Column(
@@ -90,7 +97,7 @@ fun CreateSessionScreen(
                 startTime = it
             },
             label = {
-                Text("Start Time")
+                Text("Start Time (e.g. 9:30)")
             }
         )
 
@@ -104,9 +111,20 @@ fun CreateSessionScreen(
                 endTime = it
             },
             label = {
-                Text("End Time")
+                Text("End Time (e.g. 10:15)")
             }
         )
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = fixedTime,
+                onCheckedChange = {
+                    fixedTime = it
+                }
+            )
+
+            Text("Fixed time (never shifted)")
+        }
 
         Spacer(
             modifier = Modifier.height(24.dp)
@@ -130,7 +148,8 @@ fun CreateSessionScreen(
                     title,
                     location,
                     startTime,
-                    endTime
+                    endTime,
+                    fixedTime
                 )
             }
         ) {
