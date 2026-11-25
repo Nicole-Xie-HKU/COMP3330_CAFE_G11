@@ -26,11 +26,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.group11.cafe.data.model.Session
 import com.group11.cafe.data.model.Task
+import com.group11.cafe.utils.Feedback
 import com.group11.cafe.utils.TimeUtils
 import com.group11.cafe.viewmodel.SessionViewModel
 import com.group11.cafe.viewmodel.TaskViewModel
@@ -44,6 +46,8 @@ fun MyTasksPage() {
     var tasks by remember { mutableStateOf<List<Task>>(emptyList()) }
     var sessions by remember { mutableStateOf<List<Session>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    var alert by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
@@ -90,6 +94,15 @@ fun MyTasksPage() {
             sessionViewModel.listenToSessions(
                 eventId,
                 onChange = { changed ->
+                    val moved = changed.any { new ->
+                        val old = sessions.find { it.id == new.id }
+                        old != null && old.startTime != new.startTime &&
+                            tasks.any { it.sessionId == new.id }
+                    }
+                    if (moved) {
+                        alert = "The schedule changed. Check your task times."
+                        Feedback.success(context)
+                    }
                     sessions = sessions.filter { it.eventId != eventId } + changed
                 },
                 onFailure = { errorMessage = it.message }
@@ -128,6 +141,13 @@ fun MyTasksPage() {
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        if (alert != null) {
+            Text(
+                text = alert ?: "",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         if (errorMessage != null) {
             Text(
