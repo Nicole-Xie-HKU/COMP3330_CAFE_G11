@@ -1,5 +1,9 @@
 package com.group11.cafe.ui.attendance
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -13,8 +17,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.group11.cafe.data.model.User
@@ -31,11 +37,13 @@ fun AttendanceScannerPage(
     var message by remember { mutableStateOf("Scan a participant's QR code.") }
     var scanNumber by remember { mutableIntStateOf(0) }
     var isDone by remember { mutableStateOf(false) }
+    var isSuccess by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     fun finish(text: String, success: Boolean) {
         message = text
         isDone = true
+        isSuccess = success
 
         if (success) {
             Feedback.success(context)
@@ -96,10 +104,23 @@ fun AttendanceScannerPage(
             }
         }
 
+        AnimatedVisibility(
+            visible = isSuccess,
+            enter = scaleIn() + fadeIn(),
+            exit = fadeOut()
+        ) {
+            Text(
+                text = "\u2713",
+                fontSize = 64.sp,
+                color = Color(0xFF2E7D32)
+            )
+        }
+
         if (isDone) {
             Button(
                 onClick = {
                     isDone = false
+                    isSuccess = false
                     message = "Scan a participant's QR code."
                     scanNumber += 1
                 }
