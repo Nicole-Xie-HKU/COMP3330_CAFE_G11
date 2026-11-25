@@ -39,6 +39,16 @@ object ShiftUtils {
         }
     }
 
+    fun fixedSessionsStaying(
+        sessions: List<Session>,
+        startingSession: Session
+    ): List<Session> {
+        return sessions.filter {
+            it.fixedTime &&
+                TimeUtils.isAtOrAfter(it.startTime, startingSession.startTime)
+        }
+    }
+
     fun clashes(
         sessions: List<Session>,
         moved: List<Session>
