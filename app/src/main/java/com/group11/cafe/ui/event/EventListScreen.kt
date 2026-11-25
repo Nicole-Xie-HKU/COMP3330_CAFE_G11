@@ -43,6 +43,10 @@ fun EventListScreen(
                     Text(
                         text = event.description
                     )
+
+                    if (event.date.isNotBlank()) {
+                        Text(event.date)
+                    }
                 }
             }
         }

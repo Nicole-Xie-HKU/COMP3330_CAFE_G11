@@ -413,8 +413,20 @@ fun AppNavigation() {
         composable(Screen.CreateEvent.route) {
             val eventViewModel: EventViewModel = viewModel()
 
+            var errorMessage by remember { mutableStateOf<String?>(null) }
+
             CreateEventScreen(
-                onCreateEvent = { name, description ->
+                errorMessage = errorMessage,
+                onCreateEvent = { name, description, date ->
+                    if (name.isBlank()) {
+                        errorMessage = "Enter an event name."
+                        return@CreateEventScreen
+                    }
+                    if (!TimeUtils.isDate(date)) {
+                        errorMessage = "Use a date like 2026-11-30."
+                        return@CreateEventScreen
+                    }
+
                     val organizerId = FirebaseAuth
                         .getInstance()
                         .currentUser
@@ -423,15 +435,18 @@ fun AppNavigation() {
 
                     val event = Event(
                         id = UUID.randomUUID().toString(),
-                        name = name,
-                        description = description,
+                        name = name.trim(),
+                        description = description.trim(),
+                        date = date.trim(),
                         organizerId = organizerId
                     )
 
                     eventViewModel.createEvent(
                         event,
                         onSuccess = { navController.popBackStack() },
-                        onFailure = { println(it.message) }
+                        onFailure = {
+                            errorMessage = it.message ?: "Could not create the event."
+                        }
                     )
                 }
             )

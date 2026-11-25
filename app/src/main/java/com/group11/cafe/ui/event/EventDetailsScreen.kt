@@ -30,6 +30,10 @@ fun EventDetailsScreen(
 
         Text(event.description)
 
+        if (event.date.isNotBlank()) {
+            Text("Date: ${event.date}")
+        }
+
         Spacer(
             modifier = Modifier.height(24.dp)
         )

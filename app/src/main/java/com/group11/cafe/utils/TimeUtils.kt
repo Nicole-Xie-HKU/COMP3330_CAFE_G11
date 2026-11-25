@@ -1,5 +1,6 @@
 package com.group11.cafe.utils
 
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -30,6 +31,15 @@ object TimeUtils {
         } catch (e: Exception) {
 
             time
+        }
+    }
+
+    fun isDate(date: String): Boolean {
+        return try {
+            LocalDate.parse(date.trim())
+            true
+        } catch (e: Exception) {
+            false
         }
     }
 
