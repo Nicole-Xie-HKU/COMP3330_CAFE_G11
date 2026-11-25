@@ -62,6 +62,7 @@ import com.group11.cafe.ui.components.SettingsPage
 import com.group11.cafe.ui.help.AskHelpPage
 import com.group11.cafe.ui.help.HelpListPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
+import com.group11.cafe.ui.task.TaskManagementScreen
 import com.group11.cafe.ui.task.MyTasksPage
 import com.group11.cafe.ui.task.SessionTasksPage
 import com.group11.cafe.utils.GuestUtils
@@ -275,6 +276,9 @@ fun AppNavigation() {
                 },
                 onViewEventsClick = {
                     navController.navigate(Screen.EventList.route)
+                },
+                onManageTasksClick = {
+                    navController.navigate(Screen.OrganizerTasks.route)
                 }
             )
         }
@@ -286,8 +290,19 @@ fun AppNavigation() {
                 },
                 onEventsClick = {
                     navController.navigate(Screen.CrewEvents.route)
+                },
+                onAssignedTasksClick = {
+                    navController.navigate(Screen.CrewTasks.route)
                 }
             )
+        }
+
+        composable(Screen.OrganizerTasks.route) {
+            TaskManagementScreen(isOrganizer = true)
+        }
+
+        composable(Screen.CrewTasks.route) {
+            TaskManagementScreen(isOrganizer = false)
         }
 
         composable(

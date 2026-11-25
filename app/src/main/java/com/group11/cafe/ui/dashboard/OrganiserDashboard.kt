@@ -10,7 +10,8 @@ import com.group11.cafe.ui.components.DashboardHeader
 @Composable
 fun OrganizerDashboard(
     onCreateEventClick: () -> Unit,
-    onViewEventsClick: () -> Unit
+    onViewEventsClick: () -> Unit,
+    onManageTasksClick: () -> Unit
 ) {
 
     Column(
@@ -34,6 +35,10 @@ fun OrganizerDashboard(
             Text("Create Event")
         }
 
+
+        Button(onClick = onManageTasksClick) {
+            Text("Manage Tasks")
+        }
 
         Button(
             onClick = onViewEventsClick

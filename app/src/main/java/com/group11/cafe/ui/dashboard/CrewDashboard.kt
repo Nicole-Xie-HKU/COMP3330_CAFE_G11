@@ -10,7 +10,8 @@ import com.group11.cafe.ui.components.DashboardHeader
 @Composable
 fun CrewDashboard(
     onTasksClick: () -> Unit,
-    onEventsClick: () -> Unit
+    onEventsClick: () -> Unit,
+    onAssignedTasksClick: () -> Unit
 ) {
 
     Column(
@@ -28,11 +29,14 @@ fun CrewDashboard(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-
         Button(
             onClick = onTasksClick
         ) {
             Text("My Tasks")
+        }
+
+        Button(onClick = onAssignedTasksClick) {
+            Text("Assigned Tasks")
         }
 
         Button(

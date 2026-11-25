@@ -16,6 +16,14 @@ class TaskViewModel : ViewModel() {
         repository.createTask(task, onSuccess, onFailure)
     }
 
+    fun getTasksForOrganizer(
+        organizerId: String,
+        onSuccess: (List<Task>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.getTasksForOrganizer(organizerId, onSuccess, onFailure)
+    }
+
     fun getTasksForSession(
         sessionId: String,
         onSuccess: (List<Task>) -> Unit,
@@ -30,6 +38,15 @@ class TaskViewModel : ViewModel() {
         onFailure: (Exception) -> Unit
     ) {
         repository.getTasksForCrew(crewId, onSuccess, onFailure)
+    }
+
+    fun setTaskCompleted(
+        taskId: String,
+        completed: Boolean,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.setTaskCompleted(taskId, completed, onSuccess, onFailure)
     }
 
     fun setDone(

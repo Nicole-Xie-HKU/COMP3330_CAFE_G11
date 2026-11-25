@@ -23,6 +23,12 @@ sealed class Screen(val route: String) {
     object ParticipantSettings :
         Screen("participant_settings")
 
+    object OrganizerTasks :
+        Screen("organizer_tasks")
+
+    object CrewTasks :
+        Screen("crew_tasks")
+
     object MyTasks :
         Screen("my_tasks")
 

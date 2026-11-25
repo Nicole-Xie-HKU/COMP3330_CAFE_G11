@@ -24,6 +24,23 @@ class TaskRepository {
             }
     }
 
+    fun getTasksForOrganizer(
+        organizerId: String,
+        onSuccess: (List<Task>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("tasks")
+            .whereEqualTo("organizerId", organizerId)
+            .get()
+            .addOnSuccessListener { documents ->
+                onSuccess(documents.toObjects(Task::class.java))
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
     fun getTasksForSession(
         sessionId: String,
         onSuccess: (List<Task>) -> Unit,
@@ -46,16 +63,47 @@ class TaskRepository {
         onSuccess: (List<Task>) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
+        val results = mutableMapOf<String, Task>()
+        var completedQueries = 0
+        var queryFailure: Exception? = null
+
+        fun finishQuery(tasks: List<Task>?, failure: Exception?) {
+            tasks?.forEach { task -> results[task.id] = task }
+            if (failure != null && queryFailure == null) {
+                queryFailure = failure
+            }
+            completedQueries++
+            if (completedQueries == 2) {
+                queryFailure?.let(onFailure) ?: onSuccess(results.values.toList())
+            }
+        }
+
+        listOf("crewId", "assignedCrewId").forEach { field ->
+            firestore
+                .collection("tasks")
+                .whereEqualTo(field, crewId)
+                .get()
+                .addOnSuccessListener { documents ->
+                    finishQuery(documents.toObjects(Task::class.java), null)
+                }
+                .addOnFailureListener { failure ->
+                    finishQuery(null, failure)
+                }
+        }
+    }
+
+    fun setTaskCompleted(
+        taskId: String,
+        completed: Boolean,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         firestore
             .collection("tasks")
-            .whereEqualTo("crewId", crewId)
-            .get()
-            .addOnSuccessListener { documents ->
-                onSuccess(documents.toObjects(Task::class.java))
-            }
-            .addOnFailureListener {
-                onFailure(it)
-            }
+            .document(taskId)
+            .update(mapOf("completed" to completed, "done" to completed))
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onFailure(it) }
     }
 
     fun setDone(
@@ -67,7 +115,7 @@ class TaskRepository {
         firestore
             .collection("tasks")
             .document(taskId)
-            .update("done", done)
+            .update(mapOf("done" to done, "completed" to done))
             .addOnSuccessListener {
                 onSuccess()
             }
