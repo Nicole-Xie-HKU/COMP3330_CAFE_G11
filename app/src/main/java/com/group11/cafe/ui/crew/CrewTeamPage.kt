@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.group11.cafe.data.model.OrganizationMember
 import com.group11.cafe.data.model.User
 import com.group11.cafe.viewmodel.OrganizationViewModel
 
@@ -32,6 +33,7 @@ fun CrewTeamPage() {
     val crewId = FirebaseAuth.getInstance().currentUser?.uid
     var inviteCode by remember { mutableStateOf("") }
     var organizers by remember { mutableStateOf<List<User>>(emptyList()) }
+    var memberships by remember { mutableStateOf<List<OrganizationMember>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var isJoining by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
@@ -43,6 +45,11 @@ fun CrewTeamPage() {
             return
         }
 
+        organizationViewModel.getMembershipsForCrew(
+            crewId,
+            onSuccess = { memberships = it },
+            onFailure = { message = it.message ?: "Could not load teams." }
+        )
         organizationViewModel.getOrganizersForCrew(
             crewId,
             onSuccess = {
@@ -147,6 +154,15 @@ fun CrewTeamPage() {
                         ) {
                             Text(organizer.name)
                             Text(organizer.email)
+
+                            val teamName = memberships
+                                .find { it.organizerId == organizer.id }
+                                ?.teamName
+                                .orEmpty()
+
+                            if (teamName.isNotBlank()) {
+                                Text("Your team: $teamName")
+                            }
                         }
                     }
                 }

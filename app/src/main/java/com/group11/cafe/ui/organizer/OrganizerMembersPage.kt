@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.group11.cafe.data.model.OrganizationMember
 import com.group11.cafe.data.model.User
 import com.group11.cafe.viewmodel.DashboardViewModel
 import com.group11.cafe.viewmodel.OrganizationViewModel
@@ -32,6 +35,8 @@ fun OrganizerMembersPage() {
     val organizerId = FirebaseAuth.getInstance().currentUser?.uid
     var organizer by remember { mutableStateOf<User?>(null) }
     var crewMembers by remember { mutableStateOf<List<User>>(emptyList()) }
+    var memberships by remember { mutableStateOf<List<OrganizationMember>>(emptyList()) }
+    var message by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
@@ -45,6 +50,11 @@ fun OrganizerMembersPage() {
         dashboardViewModel.loadCurrentUser(
             onSuccess = { currentUser ->
                 organizer = currentUser
+                organizationViewModel.getMembershipsForOrganizer(
+                    organizerId,
+                    onSuccess = { memberships = it },
+                    onFailure = { message = it.message ?: "Could not load teams." }
+                )
                 organizationViewModel.getCrewMembers(
                     organizerId,
                     onSuccess = {
@@ -96,6 +106,10 @@ fun OrganizerMembersPage() {
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            if (message != null) {
+                Text(message ?: "")
+            }
+
             if (crewMembers.isEmpty()) {
                 Text("No crew members have joined yet.")
             } else {
@@ -111,11 +125,58 @@ fun OrganizerMembersPage() {
                             ) {
                                 Text(member.name)
                                 Text(member.email)
+
+                                TeamNameField(
+                                    savedName = memberships
+                                        .find { it.crewId == member.id }
+                                        ?.teamName
+                                        .orEmpty(),
+                                    onSave = { teamName ->
+                                        organizationViewModel.setTeamName(
+                                            organizerId.orEmpty(),
+                                            member.id,
+                                            teamName,
+                                            onSuccess = {
+                                                message = "${member.name}: team saved."
+                                            },
+                                            onFailure = {
+                                                message = it.message ?: "Could not save the team."
+                                            }
+                                        )
+                                    }
+                                )
                             }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun TeamNameField(
+    savedName: String,
+    onSave: (String) -> Unit
+) {
+    var teamName by remember(savedName) { mutableStateOf(savedName) }
+
+    OutlinedTextField(
+        value = teamName,
+        onValueChange = {
+            teamName = it
+        },
+        label = {
+            Text("Team (e.g. Registration)")
+        },
+        singleLine = true
+    )
+
+    Button(
+        onClick = {
+            onSave(teamName)
+        }
+    ) {
+        Text("Save Team")
     }
 }
