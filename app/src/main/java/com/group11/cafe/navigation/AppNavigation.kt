@@ -163,11 +163,16 @@ fun AppNavigation() {
                 isLoading = isLoading,
                 errorMessage = errorMessage,
                 onLoginClick = { email, password ->
+                    if (email.isBlank() || password.isBlank()) {
+                        errorMessage = "Enter your email and password."
+                        return@LoginScreen
+                    }
+
                     isLoading = true
                     errorMessage = null
 
                     loginViewModel.login(
-                        email,
+                        email.trim(),
                         password,
                         onSuccess = {
                             isLoading = false
@@ -198,12 +203,17 @@ fun AppNavigation() {
                 isLoading = isLoading,
                 errorMessage = errorMessage,
                 onRegisterClick = { name, email, password, role ->
+                    if (name.isBlank() || email.isBlank() || password.isBlank()) {
+                        errorMessage = "Enter your name, email and password."
+                        return@RegisterScreen
+                    }
+
                     isLoading = true
                     errorMessage = null
 
                     registerViewModel.register(
-                        name,
-                        email,
+                        name.trim(),
+                        email.trim(),
                         password,
                         role,
                         onSuccess = {
