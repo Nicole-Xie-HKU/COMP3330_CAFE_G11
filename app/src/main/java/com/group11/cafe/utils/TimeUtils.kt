@@ -33,6 +33,15 @@ object TimeUtils {
         }
     }
 
+    fun toMinutes(time: String): Int? {
+        return try {
+            val parsed = LocalTime.parse(time.trim(), formatter)
+            parsed.hour * 60 + parsed.minute
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun isAtOrAfter(
         time: String,
         otherTime: String

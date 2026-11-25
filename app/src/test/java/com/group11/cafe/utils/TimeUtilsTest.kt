@@ -18,4 +18,14 @@ class TimeUtilsTest {
         assertTrue(TimeUtils.isAtOrAfter("10:00", "9:30"))
         assertFalse(TimeUtils.isAtOrAfter("9:30", "10:00"))
     }
+
+    @Test
+    fun toMinutes_sortsNineBeforeTen() {
+        val times = listOf("10:00", "9:30", "14:15")
+
+        assertEquals(
+            listOf("9:30", "10:00", "14:15"),
+            times.sortedBy { TimeUtils.toMinutes(it) }
+        )
+    }
 }

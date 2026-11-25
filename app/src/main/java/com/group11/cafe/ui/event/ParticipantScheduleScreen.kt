@@ -42,7 +42,7 @@ fun ParticipantScheduleScreen(
             Text("No sessions have been published yet.")
         } else {
             SessionListScreen(
-                sessions = sessions.sortedBy { it.startTime },
+                sessions = sessions,
                 onSessionClick = {}
             )
         }

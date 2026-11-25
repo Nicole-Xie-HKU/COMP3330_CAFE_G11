@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.group11.cafe.data.model.Session
+import com.group11.cafe.utils.TimeUtils
 import androidx.compose.foundation.clickable
 
 @Composable
@@ -20,7 +21,7 @@ fun SessionListScreen(
 
     LazyColumn {
 
-        items(sessions) { session ->
+        items(sessions.sortedBy { TimeUtils.toMinutes(it.startTime) }) { session ->
 
             Card(
                 modifier = Modifier
