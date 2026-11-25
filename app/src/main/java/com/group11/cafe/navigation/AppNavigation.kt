@@ -52,6 +52,7 @@ import com.group11.cafe.ui.components.AppBottomNavigationBar
 import com.group11.cafe.ui.components.EmptyPage
 import com.group11.cafe.ui.components.SettingsPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
+import com.group11.cafe.utils.SessionValidator
 import com.group11.cafe.utils.TimeUtils
 import com.group11.cafe.viewmodel.AttendanceViewModel
 import com.group11.cafe.viewmodel.DashboardViewModel
@@ -611,13 +612,9 @@ fun AppNavigation() {
                 isLoading = isLoading,
                 errorMessage = errorMessage,
                 onSubmit = { title, location, startTime, endTime ->
-                    if (
-                        title.isBlank() ||
-                        location.isBlank() ||
-                        startTime.isBlank() ||
-                        endTime.isBlank()
-                    ) {
-                        errorMessage = "Complete all session fields."
+                    val problem = SessionValidator.check(title, location, startTime, endTime)
+                    if (problem != null) {
+                        errorMessage = problem
                         return@CreateSessionScreen
                     }
 
@@ -696,13 +693,9 @@ fun AppNavigation() {
                         isLoading = isLoading,
                         errorMessage = errorMessage,
                         onSubmit = { title, location, startTime, endTime ->
-                            if (
-                                title.isBlank() ||
-                                location.isBlank() ||
-                                startTime.isBlank() ||
-                                endTime.isBlank()
-                            ) {
-                                errorMessage = "Complete all session fields."
+                            val problem = SessionValidator.check(title, location, startTime, endTime)
+                            if (problem != null) {
+                                errorMessage = problem
                                 return@CreateSessionScreen
                             }
 

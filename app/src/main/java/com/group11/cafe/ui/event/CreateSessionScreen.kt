@@ -90,7 +90,7 @@ fun CreateSessionScreen(
                 startTime = it
             },
             label = {
-                Text("Start Time")
+                Text("Start Time (e.g. 9:30)")
             }
         )
 
@@ -104,7 +104,7 @@ fun CreateSessionScreen(
                 endTime = it
             },
             label = {
-                Text("End Time")
+                Text("End Time (e.g. 10:15)")
             }
         )
 
