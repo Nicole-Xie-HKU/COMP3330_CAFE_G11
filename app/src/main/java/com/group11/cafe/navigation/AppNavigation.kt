@@ -55,6 +55,7 @@ import com.group11.cafe.ui.components.AppBackButton
 import com.group11.cafe.ui.components.AppBottomNavigationBar
 import com.group11.cafe.ui.components.SettingsPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
+import com.group11.cafe.ui.task.MyTasksPage
 import com.group11.cafe.ui.task.SessionTasksPage
 import com.group11.cafe.utils.SessionValidator
 import com.group11.cafe.utils.TimeUtils
@@ -260,6 +261,9 @@ fun AppNavigation() {
 
         composable(Screen.CrewDashboard.route) {
             CrewDashboard(
+                onTasksClick = {
+                    navController.navigate(Screen.MyTasks.route)
+                },
                 onEventsClick = {
                     navController.navigate(Screen.CrewEvents.route)
                 }
@@ -312,6 +316,10 @@ fun AppNavigation() {
                     logout(navController)
                 }
             )
+        }
+
+        composable(Screen.MyTasks.route) {
+            MyTasksPage()
         }
 
         composable(Screen.CrewEvents.route) {
