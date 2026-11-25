@@ -73,6 +73,13 @@ fun AppNavigation() {
     val currentRoute = currentBackStackEntry?.destination?.route
     val signedInUserId = FirebaseAuth.getInstance().currentUser?.uid
     var currentUserRole by remember { mutableStateOf("") }
+    val startRoute = remember {
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            Screen.Login.route
+        } else {
+            Screen.Dashboard.route
+        }
+    }
     val bottomNavigationItems = if (signedInUserId != null) {
         bottomNavigationItemsForRole(currentUserRole)
     } else if (currentRoute in listOf(
@@ -149,7 +156,7 @@ fun AppNavigation() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Login.route,
+            startDestination = startRoute,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -176,7 +183,9 @@ fun AppNavigation() {
                         password,
                         onSuccess = {
                             isLoading = false
-                            navController.navigate(Screen.Dashboard.route)
+                            navController.navigate(Screen.Dashboard.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }
+                            }
                         },
                         onFailure = {
                             isLoading = false
@@ -186,7 +195,9 @@ fun AppNavigation() {
                 },
                 onGuestClick = {
                     FirebaseAuth.getInstance().signOut()
-                    navController.navigate(Screen.ParticipantDashboard.route)
+                    navController.navigate(Screen.ParticipantDashboard.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                    }
                 },
                 onRegisterClick = {
                     navController.navigate(Screen.Register.route)
@@ -218,7 +229,9 @@ fun AppNavigation() {
                         role,
                         onSuccess = {
                             isLoading = false
-                            navController.navigate(Screen.Dashboard.route)
+                            navController.navigate(Screen.Dashboard.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }
+                            }
                         },
                         onFailure = {
                             isLoading = false
