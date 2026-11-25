@@ -37,4 +37,12 @@ class TimeUtilsTest {
         assertEquals(30 * 60 * 1000L, end - start)
         assertEquals(null, TimeUtils.toMillis("", "9:30"))
     }
+
+    @Test
+    fun taskMovesWithItsSession() {
+        val shiftedStart = TimeUtils.addMinutes("14:00", 15)
+
+        assertEquals("13:30", TimeUtils.addMinutes("14:00", -30))
+        assertEquals("13:45", TimeUtils.addMinutes(shiftedStart, -30))
+    }
 }
