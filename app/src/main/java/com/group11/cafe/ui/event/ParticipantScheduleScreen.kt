@@ -11,9 +11,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.group11.cafe.data.model.Event
 import com.group11.cafe.data.model.Session
+import com.group11.cafe.ui.components.ShakeListener
+import com.group11.cafe.utils.Feedback
 
 @Composable
 fun ParticipantScheduleScreen(
@@ -25,6 +28,13 @@ fun ParticipantScheduleScreen(
     onHelpClick: () -> Unit,
     onSessionClick: (Session) -> Unit
 ) {
+    val context = LocalContext.current
+
+    ShakeListener {
+        Feedback.success(context)
+        onHelpClick()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,7 +52,7 @@ fun ParticipantScheduleScreen(
         }
 
         Button(onClick = onHelpClick) {
-            Text("Need Help")
+            Text("Need Help (or shake)")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
