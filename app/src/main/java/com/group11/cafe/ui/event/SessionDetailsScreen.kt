@@ -102,7 +102,7 @@ fun SessionDetailsScreen(
             Button(
                 onClick = onShiftClick
             ) {
-                Text("Shift Following Sessions")
+                Text("Running Late or Early")
             }
         }
     }

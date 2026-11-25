@@ -49,7 +49,7 @@ import com.group11.cafe.ui.event.ParticipantEventsPage
 import com.group11.cafe.ui.event.ParticipantSessionPage
 import com.group11.cafe.ui.event.SessionDetailsScreen
 import com.group11.cafe.ui.event.SessionListScreen
-import com.group11.cafe.ui.event.ShiftScheduleScreen
+import com.group11.cafe.ui.event.ShiftSchedulePage
 import com.group11.cafe.ui.crew.CrewTeamPage
 import com.group11.cafe.ui.components.AppBackButton
 import com.group11.cafe.ui.components.AppBottomNavigationBar
@@ -837,71 +837,9 @@ fun AppNavigation() {
                 navArgument("sessionId") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val sessionId = backStackEntry.arguments
-                ?.getString("sessionId")
-                ?: return@composable
-            val sessionViewModel: SessionViewModel = viewModel()
-            var currentSession by remember { mutableStateOf<Session?>(null) }
-            var errorMessage by remember { mutableStateOf<String?>(null) }
-            var isLoading by remember { mutableStateOf(true) }
-
-            LaunchedEffect(sessionId) {
-                sessionViewModel.getSessionById(
-                    sessionId,
-                    onSuccess = {
-                        currentSession = it
-                        isLoading = false
-                    },
-                    onFailure = {
-                        errorMessage = it.message ?: "Could not load the session."
-                        isLoading = false
-                    }
-                )
-            }
-
-            if (isLoading) {
-                CircularProgressIndicator()
-            } else if (currentSession == null) {
-                Text(
-                    text = errorMessage ?: "Session not found.",
-                    color = MaterialTheme.colorScheme.error
-                )
-            } else {
-                currentSession?.let { session ->
-                    ShiftScheduleScreen(
-                        errorMessage = errorMessage,
-                        isLoading = isLoading,
-                        onShift15 = {
-                            isLoading = true
-                                shiftFollowingSessions(
-                                sessionViewModel,
-                                session,
-                                15,
-                                onSuccess = { navController.popBackStack() },
-                                onFailure = {
-                                    errorMessage = it.message
-                                        ?: "Could not shift the schedule."
-                                    isLoading = false
-                                }
-                            )
-                        },
-                        onShift30 = {
-                            isLoading = true
-                            shiftFollowingSessions(
-                                sessionViewModel,
-                                session,
-                                30,
-                                onSuccess = { navController.popBackStack() },
-                                onFailure = {
-                                    errorMessage = it.message
-                                        ?: "Could not shift the schedule."
-                                    isLoading = false
-                                }
-                            )
-                        }
-                    )
-                }
-            }
+            ShiftSchedulePage(
+                sessionId = backStackEntry.arguments?.getString("sessionId").orEmpty()
+            )
         }
     }
 }
@@ -916,36 +854,4 @@ private fun logout(
             inclusive = true
         }
     }
-}
-
-private fun shiftFollowingSessions(
-    sessionViewModel: SessionViewModel,
-    startingSession: Session,
-    minutes: Long,
-    onSuccess: () -> Unit,
-    onFailure: (Exception) -> Unit
-) {
-    sessionViewModel.getAllSessionsForEvent(
-        startingSession.eventId,
-        onSuccess = { sessions ->
-            val updatedSessions = sessions
-                .filter {
-                    it.id == startingSession.id ||
-                        TimeUtils.isAtOrAfter(it.startTime, startingSession.startTime)
-                }
-                .map {
-                    it.copy(
-                        startTime = TimeUtils.addMinutes(it.startTime, minutes),
-                        endTime = TimeUtils.addMinutes(it.endTime, minutes)
-                    )
-                }
-
-            sessionViewModel.updateSessions(
-                updatedSessions,
-                onSuccess,
-                onFailure
-            )
-        },
-        onFailure = onFailure
-    )
 }
