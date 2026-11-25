@@ -13,10 +13,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.group11.cafe.data.model.User
+import com.group11.cafe.utils.Feedback
 import com.group11.cafe.utils.ParticipantQrParser
 import com.group11.cafe.viewmodel.AttendanceViewModel
 
@@ -29,10 +31,17 @@ fun AttendanceScannerPage(
     var message by remember { mutableStateOf("Scan a participant's QR code.") }
     var scanNumber by remember { mutableIntStateOf(0) }
     var isDone by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    fun finish(text: String) {
+    fun finish(text: String, success: Boolean) {
         message = text
         isDone = true
+
+        if (success) {
+            Feedback.success(context)
+        } else {
+            Feedback.error(context)
+        }
     }
 
     fun checkIn(user: User) {
@@ -44,13 +53,13 @@ fun AttendanceScannerPage(
             checkedInBy = FirebaseAuth.getInstance().currentUser?.uid.orEmpty(),
             onSuccess = { isNewCheckIn ->
                 if (isNewCheckIn) {
-                    finish("${user.name} checked in.")
+                    finish("${user.name} checked in.", true)
                 } else {
-                    finish("${user.name} is already checked in.")
+                    finish("${user.name} is already checked in.", false)
                 }
             },
             onFailure = {
-                finish(it.message ?: "Could not check in.")
+                finish(it.message ?: "Could not check in.", false)
             }
         )
     }
@@ -59,15 +68,15 @@ fun AttendanceScannerPage(
         val identity = ParticipantQrParser.parse(qrValue)
 
         if (identity == null) {
-            finish("This is not a CAFE QR code.")
+            finish("This is not a CAFE QR code.", false)
         } else if (identity.isGuest) {
-            finish("Guests must register before checking in.")
+            finish("Guests must register before checking in.", false)
         } else {
             message = "Checking in..."
             attendanceViewModel.getParticipant(
                 identity.id,
                 onSuccess = { checkIn(it) },
-                onFailure = { finish(it.message ?: "Participant not found.") }
+                onFailure = { finish(it.message ?: "Participant not found.", false) }
             )
         }
     }
