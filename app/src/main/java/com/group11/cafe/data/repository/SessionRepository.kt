@@ -99,8 +99,10 @@ class SessionRepository {
                 val session =
                     it.toObject(Session::class.java)
 
-                if(session != null) {
+                if (session != null) {
                     onSuccess(session)
+                } else {
+                    onFailure(Exception("Session not found."))
                 }
             }
             .addOnFailureListener {

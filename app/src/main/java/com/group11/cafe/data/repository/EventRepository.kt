@@ -115,6 +115,8 @@ class EventRepository {
 
                 if (event != null) {
                     onSuccess(event)
+                } else {
+                    onFailure(Exception("Event not found."))
                 }
             }
             .addOnFailureListener {
