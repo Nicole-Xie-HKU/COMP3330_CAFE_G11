@@ -9,6 +9,7 @@ import com.group11.cafe.data.repository.AttendanceRepository
 import com.group11.cafe.data.repository.EventRepository
 import com.group11.cafe.data.repository.HelpRepository
 import com.group11.cafe.data.repository.SessionRepository
+import com.group11.cafe.data.repository.SignupRepository
 import com.group11.cafe.data.repository.TaskRepository
 
 class EventViewModel : ViewModel() {
@@ -30,6 +31,9 @@ class EventViewModel : ViewModel() {
 
     private val attendanceRepository =
         AttendanceRepository()
+
+    private val signupRepository =
+        SignupRepository()
 
     fun createEvent(
         event: Event,
@@ -148,9 +152,15 @@ class EventViewModel : ViewModel() {
                                         attendanceRepository.deleteForEvent(
                                             eventId,
                                             onSuccess = {
-                                                repository.deleteEvent(
+                                                signupRepository.deleteForEvent(
                                                     eventId,
-                                                    onSuccess,
+                                                    onSuccess = {
+                                                        repository.deleteEvent(
+                                                            eventId,
+                                                            onSuccess,
+                                                            onFailure
+                                                        )
+                                                    },
                                                     onFailure
                                                 )
                                             },
