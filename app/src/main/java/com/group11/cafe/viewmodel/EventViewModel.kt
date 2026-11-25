@@ -11,6 +11,7 @@ import com.group11.cafe.data.repository.HelpRepository
 import com.group11.cafe.data.repository.SessionRepository
 import com.group11.cafe.data.repository.SignupRepository
 import com.group11.cafe.data.repository.TaskRepository
+import com.group11.cafe.utils.EventDeleteSteps
 
 class EventViewModel : ViewModel() {
 
@@ -137,45 +138,31 @@ class EventViewModel : ViewModel() {
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        sessionRepository.deleteForEvent(
-            eventId,
-            onSuccess = {
-                taskRepository.deleteForEvent(
-                    eventId,
-                    onSuccess = {
-                        announcementRepository.deleteForEvent(
-                            eventId,
-                            onSuccess = {
-                                helpRepository.deleteForEvent(
-                                    eventId,
-                                    onSuccess = {
-                                        attendanceRepository.deleteForEvent(
-                                            eventId,
-                                            onSuccess = {
-                                                signupRepository.deleteForEvent(
-                                                    eventId,
-                                                    onSuccess = {
-                                                        repository.deleteEvent(
-                                                            eventId,
-                                                            onSuccess,
-                                                            onFailure
-                                                        )
-                                                    },
-                                                    onFailure
-                                                )
-                                            },
-                                            onFailure
-                                        )
-                                    },
-                                    onFailure
-                                )
-                            },
-                            onFailure
-                        )
-                    },
-                    onFailure
-                )
-            },
+        EventDeleteSteps.run(
+            listOf(
+                { done, failed ->
+                    sessionRepository.deleteForEvent(eventId, done, failed)
+                },
+                { done, failed ->
+                    taskRepository.deleteForEvent(eventId, done, failed)
+                },
+                { done, failed ->
+                    announcementRepository.deleteForEvent(eventId, done, failed)
+                },
+                { done, failed ->
+                    helpRepository.deleteForEvent(eventId, done, failed)
+                },
+                { done, failed ->
+                    attendanceRepository.deleteForEvent(eventId, done, failed)
+                },
+                { done, failed ->
+                    signupRepository.deleteForEvent(eventId, done, failed)
+                },
+                { done, failed ->
+                    repository.deleteEvent(eventId, done, failed)
+                }
+            ),
+            onSuccess,
             onFailure
         )
     }
