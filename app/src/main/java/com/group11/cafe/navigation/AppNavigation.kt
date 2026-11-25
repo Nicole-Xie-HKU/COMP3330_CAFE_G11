@@ -728,6 +728,21 @@ fun AppNavigation() {
             val sessionViewModel: SessionViewModel = viewModel()
             var isLoading by remember { mutableStateOf(false) }
             var errorMessage by remember { mutableStateOf<String?>(null) }
+            var existingSessions by remember { mutableStateOf<List<Session>>(emptyList()) }
+
+            DisposableEffect(eventId) {
+                val listener = sessionViewModel.listenToSessions(
+                    eventId,
+                    onChange = { existingSessions = it },
+                    onFailure = {
+                        errorMessage = it.message ?: "Could not load sessions."
+                    }
+                )
+
+                onDispose {
+                    listener.remove()
+                }
+            }
 
             CreateSessionScreen(
                 isLoading = isLoading,
@@ -736,6 +751,17 @@ fun AppNavigation() {
                     val problem = SessionValidator.check(title, location, startTime, endTime)
                     if (problem != null) {
                         errorMessage = problem
+                        return@CreateSessionScreen
+                    }
+
+                    val clash = SessionValidator.overlap(
+                        existingSessions,
+                        startTime,
+                        endTime,
+                        null
+                    )
+                    if (clash != null) {
+                        errorMessage = clash
                         return@CreateSessionScreen
                     }
 
@@ -805,6 +831,24 @@ fun AppNavigation() {
                         color = MaterialTheme.colorScheme.error
                     )
                 } else {
+                    var existingSessions by remember {
+                        mutableStateOf<List<Session>>(emptyList())
+                    }
+
+                    DisposableEffect(currentSession.eventId) {
+                        val listener = sessionViewModel.listenToSessions(
+                            currentSession.eventId,
+                            onChange = { existingSessions = it },
+                            onFailure = {
+                                errorMessage = it.message ?: "Could not load sessions."
+                            }
+                        )
+
+                        onDispose {
+                            listener.remove()
+                        }
+                    }
+
                     CreateSessionScreen(
                         screenTitle = "Edit Session",
                         buttonText = "Save Changes",
@@ -820,6 +864,17 @@ fun AppNavigation() {
                             val problem = SessionValidator.check(title, location, startTime, endTime)
                             if (problem != null) {
                                 errorMessage = problem
+                                return@CreateSessionScreen
+                            }
+
+                            val clash = SessionValidator.overlap(
+                                existingSessions,
+                                startTime,
+                                endTime,
+                                currentSession.id
+                            )
+                            if (clash != null) {
+                                errorMessage = clash
                                 return@CreateSessionScreen
                             }
 
