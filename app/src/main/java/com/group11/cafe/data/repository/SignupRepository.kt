@@ -62,6 +62,26 @@ class SignupRepository {
             }
     }
 
+    fun listen(
+        eventId: String,
+        userId: String,
+        onChange: (Signup?) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return firestore
+            .collection("signups")
+            .document("${eventId}_${userId}")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onFailure(error)
+                } else if (snapshot == null || !snapshot.exists()) {
+                    onChange(null)
+                } else {
+                    onChange(snapshot.toObject(Signup::class.java))
+                }
+            }
+    }
+
     fun listenForEvent(
         eventId: String,
         onChange: (List<Signup>) -> Unit,

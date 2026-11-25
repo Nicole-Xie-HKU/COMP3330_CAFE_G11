@@ -34,6 +34,15 @@ class SignupViewModel : ViewModel() {
         return repository.listenForUser(userId, onChange, onFailure)
     }
 
+    fun listen(
+        eventId: String,
+        userId: String,
+        onChange: (Signup?) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return repository.listen(eventId, userId, onChange, onFailure)
+    }
+
     fun listenForEvent(
         eventId: String,
         onChange: (List<Signup>) -> Unit,

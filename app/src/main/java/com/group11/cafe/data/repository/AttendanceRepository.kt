@@ -3,6 +3,7 @@ package com.group11.cafe.data.repository
 
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.group11.cafe.data.model.AttendanceRecord
 
 class AttendanceRepository {
@@ -50,6 +51,25 @@ class AttendanceRepository {
         }.addOnFailureListener { exception ->
             onFailure(exception)
         }
+    }
+
+    fun listenForSession(
+        eventId: String,
+        sessionId: String,
+        onChange: (List<AttendanceRecord>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return firestore
+            .collection("attendance")
+            .whereEqualTo("eventId", eventId)
+            .whereEqualTo("sessionId", sessionId)
+            .addSnapshotListener { documents, error ->
+                if (error != null) {
+                    onFailure(error)
+                } else if (documents != null) {
+                    onChange(documents.toObjects(AttendanceRecord::class.java))
+                }
+            }
     }
 
     fun getAttendanceForSession(
