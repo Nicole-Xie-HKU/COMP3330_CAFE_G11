@@ -64,9 +64,9 @@ import com.group11.cafe.ui.help.HelpListPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
 import com.group11.cafe.ui.task.MyTasksPage
 import com.group11.cafe.ui.task.SessionTasksPage
+import com.group11.cafe.utils.EventValidator
 import com.group11.cafe.utils.GuestUtils
 import com.group11.cafe.utils.SessionValidator
-import com.group11.cafe.utils.TimeUtils
 import com.group11.cafe.viewmodel.DashboardViewModel
 import com.group11.cafe.viewmodel.EventViewModel
 import com.group11.cafe.viewmodel.LoginViewModel
@@ -466,12 +466,9 @@ fun AppNavigation() {
             CreateEventScreen(
                 errorMessage = errorMessage,
                 onCreateEvent = { name, description, date ->
-                    if (name.isBlank()) {
-                        errorMessage = "Enter an event name."
-                        return@CreateEventScreen
-                    }
-                    if (!TimeUtils.isDate(date)) {
-                        errorMessage = "Use a date like 2026-11-30."
+                    val problem = EventValidator.check(name, description, date)
+                    if (problem != null) {
+                        errorMessage = problem
                         return@CreateEventScreen
                     }
 
@@ -558,12 +555,9 @@ fun AppNavigation() {
                             errorMessage = "You cannot edit this event."
                             return@CreateEventScreen
                         }
-                        if (name.isBlank()) {
-                            errorMessage = "Enter an event name."
-                            return@CreateEventScreen
-                        }
-                        if (!TimeUtils.isDate(date)) {
-                            errorMessage = "Use a date like 2026-11-30."
+                        val problem = EventValidator.check(name, description, date)
+                        if (problem != null) {
+                            errorMessage = problem
                             return@CreateEventScreen
                         }
 
