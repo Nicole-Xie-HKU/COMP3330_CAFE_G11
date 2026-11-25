@@ -56,6 +56,7 @@ import com.group11.cafe.ui.crew.CrewTeamPage
 import com.group11.cafe.ui.components.AppBackButton
 import com.group11.cafe.ui.components.AppBottomNavigationBar
 import com.group11.cafe.ui.components.SettingsPage
+import com.group11.cafe.ui.help.AskHelpPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
 import com.group11.cafe.ui.task.MyTasksPage
 import com.group11.cafe.ui.task.SessionTasksPage
@@ -410,6 +411,11 @@ fun AppNavigation() {
                         Screen.Announcements.createRoute(eventId)
                     )
                 },
+                onHelpClick = {
+                    navController.navigate(
+                        Screen.AskHelp.createRoute(eventId)
+                    )
+                },
                 onSessionClick = {
                     navController.navigate(
                         Screen.ParticipantSession.createRoute(it.id)
@@ -579,6 +585,17 @@ fun AppNavigation() {
             AnnouncementsPage(
                 eventId = backStackEntry.arguments?.getString("eventId").orEmpty(),
                 canPost = currentUserRole == UserRole.ORGANIZER
+            )
+        }
+
+        composable(
+            route = Screen.AskHelp.route,
+            arguments = listOf(
+                navArgument("eventId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            AskHelpPage(
+                eventId = backStackEntry.arguments?.getString("eventId").orEmpty()
             )
         }
 

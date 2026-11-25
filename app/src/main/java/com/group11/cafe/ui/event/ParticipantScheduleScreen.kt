@@ -22,6 +22,7 @@ fun ParticipantScheduleScreen(
     isLoading: Boolean,
     errorMessage: String?,
     onAnnouncementsClick: () -> Unit,
+    onHelpClick: () -> Unit,
     onSessionClick: (Session) -> Unit
 ) {
     Column(
@@ -38,6 +39,10 @@ fun ParticipantScheduleScreen(
 
         Button(onClick = onAnnouncementsClick) {
             Text("Announcements")
+        }
+
+        Button(onClick = onHelpClick) {
+            Text("Need Help")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
