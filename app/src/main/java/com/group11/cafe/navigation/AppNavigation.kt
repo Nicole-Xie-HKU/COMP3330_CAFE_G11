@@ -57,6 +57,7 @@ import com.group11.cafe.ui.components.AppBackButton
 import com.group11.cafe.ui.components.AppBottomNavigationBar
 import com.group11.cafe.ui.components.SettingsPage
 import com.group11.cafe.ui.help.AskHelpPage
+import com.group11.cafe.ui.help.HelpListPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
 import com.group11.cafe.ui.task.MyTasksPage
 import com.group11.cafe.ui.task.SessionTasksPage
@@ -566,6 +567,11 @@ fun AppNavigation() {
                                 Screen.Announcements.createRoute(currentEvent.id)
                             )
                         },
+                        onHelpClick = {
+                            navController.navigate(
+                                Screen.HelpList.createRoute(currentEvent.id)
+                            )
+                        },
                         onViewSessionsClick = {
                             navController.navigate(
                                 Screen.SessionList.createRoute(currentEvent.id)
@@ -595,6 +601,17 @@ fun AppNavigation() {
             )
         ) { backStackEntry ->
             AskHelpPage(
+                eventId = backStackEntry.arguments?.getString("eventId").orEmpty()
+            )
+        }
+
+        composable(
+            route = Screen.HelpList.route,
+            arguments = listOf(
+                navArgument("eventId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            HelpListPage(
                 eventId = backStackEntry.arguments?.getString("eventId").orEmpty()
             )
         }

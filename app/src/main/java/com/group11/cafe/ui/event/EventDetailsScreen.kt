@@ -11,6 +11,7 @@ import com.group11.cafe.data.model.Event
 fun EventDetailsScreen(
     event: Event,
     onAnnouncementsClick: () -> Unit,
+    onHelpClick: () -> Unit,
     onViewSessionsClick: () -> Unit
 ) {
 
@@ -49,6 +50,12 @@ fun EventDetailsScreen(
             onClick = onAnnouncementsClick
         ) {
             Text("Announcements")
+        }
+
+        Button(
+            onClick = onHelpClick
+        ) {
+            Text("Help Requests")
         }
     }
 }
