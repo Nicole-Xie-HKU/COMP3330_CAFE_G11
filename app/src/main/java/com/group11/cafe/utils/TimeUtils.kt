@@ -56,6 +56,18 @@ object TimeUtils {
         }
     }
 
+    fun timeLeft(date: String, time: String, now: Long): String {
+        val target = toMillis(date, time) ?: return ""
+        val minutes = (target - now) / 60000
+
+        return when {
+            target < now -> "overdue"
+            minutes < 60 -> "in $minutes min"
+            minutes < 24 * 60 -> "in ${minutes / 60} h"
+            else -> "in ${minutes / (24 * 60)} days"
+        }
+    }
+
     fun toMinutes(time: String): Int? {
         return try {
             val parsed = LocalTime.parse(time.trim(), formatter)

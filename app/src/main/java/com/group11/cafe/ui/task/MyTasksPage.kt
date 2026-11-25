@@ -1,5 +1,7 @@
 package com.group11.cafe.ui.task
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,8 +17,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,6 +45,7 @@ fun MyTasksPage() {
     var sessions by remember { mutableStateOf<List<Session>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
     fun loadTasks() {
         taskViewModel.getTasksForCrew(
@@ -84,6 +89,22 @@ fun MyTasksPage() {
 
     LaunchedEffect(crewId) {
         loadTasks()
+    }
+
+    // refresh the time left twice a minute
+    DisposableEffect(Unit) {
+        val handler = Handler(Looper.getMainLooper())
+        val ticker = object : Runnable {
+            override fun run() {
+                now = System.currentTimeMillis()
+                handler.postDelayed(this, 30000)
+            }
+        }
+        handler.post(ticker)
+
+        onDispose {
+            handler.removeCallbacks(ticker)
+        }
     }
 
     Column(
@@ -132,6 +153,10 @@ fun MyTasksPage() {
                             Column(modifier = Modifier.padding(8.dp)) {
                                 Text("${timeOf(task)} ${task.title}")
                                 Text("${task.eventName} ${task.eventDate}")
+
+                                if (!task.done) {
+                                    Text(TimeUtils.timeLeft(task.eventDate, timeOf(task), now))
+                                }
 
                                 if (session != null) {
                                     Text("${session.title} at ${session.location}")

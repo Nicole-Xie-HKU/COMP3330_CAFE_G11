@@ -45,4 +45,14 @@ class TimeUtilsTest {
         assertEquals("13:30", TimeUtils.addMinutes("14:00", -30))
         assertEquals("13:45", TimeUtils.addMinutes(shiftedStart, -30))
     }
+
+    @Test
+    fun timeLeft_countsDown() {
+        val now = TimeUtils.toMillis("2026-11-30", "9:00")!!
+
+        assertEquals("in 30 min", TimeUtils.timeLeft("2026-11-30", "9:30", now))
+        assertEquals("in 2 h", TimeUtils.timeLeft("2026-11-30", "11:15", now))
+        assertEquals("overdue", TimeUtils.timeLeft("2026-11-30", "8:59", now))
+        assertEquals("", TimeUtils.timeLeft("", "9:30", now))
+    }
 }
