@@ -11,13 +11,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.group11.cafe.data.model.Event
 import com.group11.cafe.data.model.Session
 import com.group11.cafe.ui.components.ShakeListener
+import com.group11.cafe.ui.components.currentTime
 import com.group11.cafe.utils.Feedback
+import com.group11.cafe.utils.NetworkUtils
 import com.group11.cafe.utils.Prefs
 
 @Composable
@@ -31,6 +34,8 @@ fun ParticipantScheduleScreen(
     onSessionClick: (Session) -> Unit
 ) {
     val context = LocalContext.current
+    val now = currentTime()
+    val isOnline = remember(now) { NetworkUtils.isOnline(context) }
 
     LaunchedEffect(event.id) {
         if (event.id.isNotBlank()) {
@@ -54,6 +59,10 @@ fun ParticipantScheduleScreen(
         )
 
         Text("${event.name} ${event.date}")
+
+        if (!isOnline) {
+            Text("Offline. Showing the saved schedule.")
+        }
 
         Button(onClick = onAnnouncementsClick) {
             Text("Announcements")
