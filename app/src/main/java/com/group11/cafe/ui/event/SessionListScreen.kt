@@ -47,6 +47,18 @@ fun SessionListScreen(
                     Text(
                         "${session.startTime} - ${session.endTime}"
                     )
+
+                    if (session.movedMinutes > 0) {
+                        Text(
+                            text = "Moved ${session.movedMinutes} min later",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    } else if (session.movedMinutes < 0) {
+                        Text(
+                            text = "Moved ${-session.movedMinutes} min earlier",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }

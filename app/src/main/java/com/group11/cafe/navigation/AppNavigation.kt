@@ -718,6 +718,7 @@ fun AppNavigation() {
                         isLoading = isLoading,
                         errorMessage = errorMessage,
                         onSubmit = { title, location, startTime, endTime, fixedTime ->
+                            val sameStart = startTime.trim() == currentSession.startTime
                             val problem = SessionValidator.check(title, location, startTime, endTime)
                             if (problem != null) {
                                 errorMessage = problem
@@ -732,7 +733,8 @@ fun AppNavigation() {
                                     location = location.trim(),
                                     startTime = startTime.trim(),
                                     endTime = endTime.trim(),
-                                    fixedTime = fixedTime
+                                    fixedTime = fixedTime,
+                                    movedMinutes = if (sameStart) currentSession.movedMinutes else 0
                                 ),
                                 onSuccess = {
                                     isLoading = false
