@@ -10,6 +10,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -17,6 +18,7 @@ import com.group11.cafe.data.model.Event
 import com.group11.cafe.data.model.Session
 import com.group11.cafe.ui.components.ShakeListener
 import com.group11.cafe.utils.Feedback
+import com.group11.cafe.utils.Prefs
 
 @Composable
 fun ParticipantScheduleScreen(
@@ -29,6 +31,12 @@ fun ParticipantScheduleScreen(
     onSessionClick: (Session) -> Unit
 ) {
     val context = LocalContext.current
+
+    LaunchedEffect(event.id) {
+        if (event.id.isNotBlank()) {
+            Prefs.saveLastEvent(context, event.id, event.name)
+        }
+    }
 
     ShakeListener {
         Feedback.success(context)

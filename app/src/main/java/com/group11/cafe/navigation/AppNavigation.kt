@@ -301,7 +301,13 @@ fun AppNavigation() {
         }
 
         composable(Screen.ParticipantDashboard.route) {
-            ParticipantDashboard()
+            ParticipantDashboard(
+                onLastEventClick = {
+                    navController.navigate(
+                        Screen.ParticipantSchedule.createRoute(it)
+                    )
+                }
+            )
         }
 
         composable(Screen.ParticipantEventsTab.route) {
