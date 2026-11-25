@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 
-import android.util.Log
 
 @Composable
 fun RegisterScreen(
@@ -98,8 +97,6 @@ fun RegisterScreen(
         Button(
             enabled = !isLoading,
             onClick = {
-
-                Log.d("REGISTER", "Button clicked")
 
                 onRegisterClick(
                     name,
