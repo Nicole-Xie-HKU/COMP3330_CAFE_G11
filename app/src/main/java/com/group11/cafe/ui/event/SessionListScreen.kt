@@ -10,18 +10,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.group11.cafe.data.model.Session
+import com.group11.cafe.ui.components.NowDot
+import com.group11.cafe.ui.components.currentTime
 import com.group11.cafe.utils.TimeUtils
 import androidx.compose.foundation.clickable
 
 @Composable
 fun SessionListScreen(
     sessions: List<Session>,
+    eventDate: String,
     onSessionClick: (Session) -> Unit
 ) {
 
+    val now = currentTime()
+    val sortedSessions = sessions.sortedBy { TimeUtils.toMinutes(it.startTime) }
+    val nextSession = sortedSessions.find {
+        val start = TimeUtils.toMillis(eventDate, it.startTime)
+        start != null && start > now
+    }
+
     LazyColumn {
 
-        items(sessions.sortedBy { TimeUtils.toMinutes(it.startTime) }) { session ->
+        items(sortedSessions) { session ->
 
             Card(
                 modifier = Modifier
@@ -47,6 +57,12 @@ fun SessionListScreen(
                     Text(
                         "${session.startTime} - ${session.endTime}"
                     )
+
+                    if (TimeUtils.isNow(eventDate, session.startTime, session.endTime, now)) {
+                        NowDot()
+                    } else if (session.id == nextSession?.id) {
+                        Text("Next")
+                    }
 
                     if (session.movedMinutes > 0) {
                         Text(

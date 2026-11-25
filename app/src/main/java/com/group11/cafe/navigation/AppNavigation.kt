@@ -367,9 +367,19 @@ fun AppNavigation() {
                 ?.getString("eventId")
                 ?: return@composable
             val sessionViewModel: SessionViewModel = viewModel()
+            val eventViewModel: EventViewModel = viewModel()
+            var event by remember { mutableStateOf(Event()) }
             var sessions by remember { mutableStateOf<List<Session>>(emptyList()) }
             var isLoading by remember { mutableStateOf(true) }
             var errorMessage by remember { mutableStateOf<String?>(null) }
+
+            LaunchedEffect(eventId) {
+                eventViewModel.getEventById(
+                    eventId,
+                    onSuccess = { event = it },
+                    onFailure = { errorMessage = it.message }
+                )
+            }
 
             DisposableEffect(eventId) {
                 val listener = sessionViewModel.listenToSessions(
@@ -390,6 +400,7 @@ fun AppNavigation() {
             }
 
             ParticipantScheduleScreen(
+                event = event,
                 sessions = sessions,
                 isLoading = isLoading,
                 errorMessage = errorMessage,
@@ -558,9 +569,19 @@ fun AppNavigation() {
                 ?.getString("eventId")
                 ?: return@composable
             val sessionViewModel: SessionViewModel = viewModel()
+            val eventViewModel: EventViewModel = viewModel()
+            var event by remember { mutableStateOf(Event()) }
             var sessions by remember { mutableStateOf<List<Session>>(emptyList()) }
             var isLoading by remember { mutableStateOf(true) }
             var errorMessage by remember { mutableStateOf<String?>(null) }
+
+            LaunchedEffect(eventId) {
+                eventViewModel.getEventById(
+                    eventId,
+                    onSuccess = { event = it },
+                    onFailure = { errorMessage = it.message }
+                )
+            }
 
             DisposableEffect(eventId) {
                 val listener = sessionViewModel.listenToSessions(
@@ -608,6 +629,7 @@ fun AppNavigation() {
                 } else {
                     SessionListScreen(
                         sessions = sessions,
+                        eventDate = event.date,
                         onSessionClick = {
                             navController.navigate(
                                 Screen.SessionDetails.createRoute(it.id)

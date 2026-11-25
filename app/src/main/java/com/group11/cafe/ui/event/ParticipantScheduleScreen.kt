@@ -11,10 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.group11.cafe.data.model.Event
 import com.group11.cafe.data.model.Session
 
 @Composable
 fun ParticipantScheduleScreen(
+    event: Event,
     sessions: List<Session>,
     isLoading: Boolean,
     errorMessage: String?,
@@ -30,6 +32,8 @@ fun ParticipantScheduleScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
+        Text("${event.name} ${event.date}")
+
         Spacer(modifier = Modifier.height(16.dp))
 
         if (isLoading) {
@@ -44,6 +48,7 @@ fun ParticipantScheduleScreen(
         } else {
             SessionListScreen(
                 sessions = sessions,
+                eventDate = event.date,
                 onSessionClick = onSessionClick
             )
         }

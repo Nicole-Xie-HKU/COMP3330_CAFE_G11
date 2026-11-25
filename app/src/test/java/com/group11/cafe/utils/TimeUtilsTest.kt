@@ -55,4 +55,13 @@ class TimeUtilsTest {
         assertEquals("overdue", TimeUtils.timeLeft("2026-11-30", "8:59", now))
         assertEquals("", TimeUtils.timeLeft("", "9:30", now))
     }
+
+    @Test
+    fun isNow_checksStartAndEnd() {
+        val now = TimeUtils.toMillis("2026-11-30", "9:45")!!
+
+        assertTrue(TimeUtils.isNow("2026-11-30", "9:30", "10:00", now))
+        assertFalse(TimeUtils.isNow("2026-11-30", "10:00", "10:30", now))
+        assertFalse(TimeUtils.isNow("2026-12-01", "9:30", "10:00", now))
+    }
 }

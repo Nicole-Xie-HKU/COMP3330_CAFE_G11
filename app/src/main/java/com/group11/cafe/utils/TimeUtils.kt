@@ -68,6 +68,13 @@ object TimeUtils {
         }
     }
 
+    fun isNow(date: String, startTime: String, endTime: String, now: Long): Boolean {
+        val start = toMillis(date, startTime) ?: return false
+        val end = toMillis(date, endTime) ?: return false
+
+        return now >= start && now < end
+    }
+
     fun toMinutes(time: String): Int? {
         return try {
             val parsed = LocalTime.parse(time.trim(), formatter)

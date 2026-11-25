@@ -1,7 +1,5 @@
 package com.group11.cafe.ui.task
 
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.group11.cafe.data.model.Session
 import com.group11.cafe.data.model.Task
+import com.group11.cafe.ui.components.currentTime
 import com.group11.cafe.utils.Feedback
 import com.group11.cafe.utils.TimeUtils
 import com.group11.cafe.viewmodel.SessionViewModel
@@ -49,7 +47,7 @@ fun MyTasksPage() {
     var alert by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    val now = currentTime()
 
     fun loadTasks() {
         taskViewModel.getTasksForCrew(
@@ -111,22 +109,6 @@ fun MyTasksPage() {
 
         onDispose {
             listeners.forEach { it.remove() }
-        }
-    }
-
-    // refresh the time left twice a minute
-    DisposableEffect(Unit) {
-        val handler = Handler(Looper.getMainLooper())
-        val ticker = object : Runnable {
-            override fun run() {
-                now = System.currentTimeMillis()
-                handler.postDelayed(this, 30000)
-            }
-        }
-        handler.post(ticker)
-
-        onDispose {
-            handler.removeCallbacks(ticker)
         }
     }
 
