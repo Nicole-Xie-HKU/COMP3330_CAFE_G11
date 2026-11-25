@@ -34,6 +34,7 @@ fun ShiftSchedulePage(
     var sessions by remember { mutableStateOf<List<Session>>(emptyList()) }
     var startingSession by remember { mutableStateOf<Session?>(null) }
     var minutes by remember { mutableIntStateOf(0) }
+    var oldSessions by remember { mutableStateOf<List<Session>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var message by remember { mutableStateOf<String?>(null) }
 
@@ -61,12 +62,13 @@ fun ShiftSchedulePage(
         )
     }
 
-    fun save(changed: List<Session>, text: String) {
+    fun save(changed: List<Session>, text: String, undo: List<Session>) {
         isLoading = true
         sessionViewModel.updateSessions(
             changed,
             onSuccess = {
                 message = text
+                oldSessions = undo
                 minutes = 0
                 load()
             },
@@ -142,11 +144,21 @@ fun ShiftSchedulePage(
 
                     Button(
                         onClick = {
-                            save(after, "Schedule moved.")
+                            save(after, "Schedule moved.", before)
                         }
                     ) {
                         Text("Confirm")
                     }
+                }
+            }
+
+            if (oldSessions.isNotEmpty()) {
+                Button(
+                    onClick = {
+                        save(oldSessions, "Shift undone.", emptyList())
+                    }
+                ) {
+                    Text("Undo Last Shift")
                 }
             }
         }
