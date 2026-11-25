@@ -1,7 +1,8 @@
 package com.group11.cafe.data.repository
 
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import com.group11.cafe.data.model.Event
 
@@ -53,6 +54,30 @@ class EventRepository {
             }
     }
 
+    fun getEventsForOrganizers(
+        organizerIds: List<String>,
+        onSuccess: (List<Event>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        if (organizerIds.isEmpty()) {
+            onSuccess(emptyList())
+            return
+        }
+
+        firestore
+            .collection("events")
+            .whereIn("organizerId", organizerIds)
+            .get()
+            .addOnSuccessListener { documents ->
+                onSuccess(
+                    documents.toObjects(Event::class.java)
+                )
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
     fun getAllEvents(
         onSuccess: (List<Event>) -> Unit,
         onFailure: (Exception) -> Unit
@@ -98,6 +123,59 @@ class EventRepository {
             }
     }
 
+    fun updateEvent(
+        event: Event,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("events")
+            .document(event.id)
+            .set(event)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
+    fun deleteEvent(
+        eventId: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("events")
+            .document(eventId)
+            .delete()
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
+    fun listenToEvent(
+        eventId: String,
+        onChange: (Event?) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return firestore
+            .collection("events")
+            .document(eventId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onFailure(error)
+                } else if (snapshot == null || !snapshot.exists()) {
+                    onChange(null)
+                } else {
+                    onChange(snapshot.toObject(Event::class.java))
+                }
+            }
+    }
+
     fun getEventById(
         eventId: String,
         onSuccess: (Event) -> Unit,
@@ -115,6 +193,8 @@ class EventRepository {
 
                 if (event != null) {
                     onSuccess(event)
+                } else {
+                    onFailure(Exception("Event not found."))
                 }
             }
             .addOnFailureListener {

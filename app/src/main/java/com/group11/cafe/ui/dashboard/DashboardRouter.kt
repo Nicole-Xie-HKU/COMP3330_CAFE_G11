@@ -8,7 +8,6 @@ import androidx.navigation.NavController
 import com.group11.cafe.navigation.Screen
 import com.group11.cafe.viewmodel.DashboardViewModel
 
-import android.util.Log
 
 @Composable
 fun DashboardRouter(
@@ -21,8 +20,6 @@ fun DashboardRouter(
     LaunchedEffect(Unit) {
 
         viewModel.loadRole { role ->
-
-            Log.d("ROLE_DEBUG", "Role = $role")
 
             when(role.trim()) {
 
@@ -57,8 +54,6 @@ fun DashboardRouter(
                 }
 
                 else -> {
-                    Log.d("ROLE_DEBUG", "Unknown role: $role")
-
                     navController.navigate(
                         Screen.ParticipantDashboard.route
                     ) {

@@ -35,9 +35,6 @@ fun OrganizerDashboard(
             Text("Create Event")
         }
 
-        Button(onClick = {}) {
-            Text("Manage Sessions")
-        }
 
         Button(onClick = onManageTasksClick) {
             Text("Manage Tasks")

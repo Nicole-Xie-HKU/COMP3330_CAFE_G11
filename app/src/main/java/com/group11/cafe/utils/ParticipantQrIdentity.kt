@@ -10,7 +10,7 @@ object ParticipantQrParser {
     private const val PARTICIPANT_PREFIX = "CAFE-"
     const val GUEST_QR_CODE = "CAFE-GUEST"
 
-    fun parse(value: String): ParticipantQrIdentity {
+    fun parse(value: String): ParticipantQrIdentity? {
         val trimmedValue = value.trim()
 
         if (trimmedValue == GUEST_QR_CODE) {
@@ -20,8 +20,18 @@ object ParticipantQrParser {
             )
         }
 
+        if (!trimmedValue.startsWith(PARTICIPANT_PREFIX)) {
+            return null
+        }
+
+        val id = trimmedValue.removePrefix(PARTICIPANT_PREFIX)
+
+        if (id.isBlank() || id.contains("/")) {
+            return null
+        }
+
         return ParticipantQrIdentity(
-            id = trimmedValue.removePrefix(PARTICIPANT_PREFIX),
+            id = id,
             isGuest = false
         )
     }

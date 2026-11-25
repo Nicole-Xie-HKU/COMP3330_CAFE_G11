@@ -1,6 +1,5 @@
 package com.group11.cafe.data.repository
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.group11.cafe.data.model.User
@@ -20,15 +19,11 @@ class AuthRepository {
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        Log.d("REGISTER", "Firebase register called")
-
         auth.createUserWithEmailAndPassword(
             email,
             password
         )
             .addOnSuccessListener { result ->
-                Log.d("REGISTER", "Firebase auth success")
-
                 val user =
                     User(
                         id = result.user!!.uid,
@@ -64,7 +59,19 @@ class AuthRepository {
                     }
             }
             .addOnFailureListener {
-                Log.e("REGISTER", "Firebase auth failed: ${it.message}")
+                onFailure(it)
+            }
+    }
+
+    fun loginAsGuest(
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        auth.signInAnonymously()
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
                 onFailure(it)
             }
     }

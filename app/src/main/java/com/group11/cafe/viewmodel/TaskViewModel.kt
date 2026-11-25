@@ -24,6 +24,14 @@ class TaskViewModel : ViewModel() {
         repository.getTasksForOrganizer(organizerId, onSuccess, onFailure)
     }
 
+    fun getTasksForSession(
+        sessionId: String,
+        onSuccess: (List<Task>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.getTasksForSession(sessionId, onSuccess, onFailure)
+    }
+
     fun getTasksForCrew(
         crewId: String,
         onSuccess: (List<Task>) -> Unit,
@@ -39,5 +47,22 @@ class TaskViewModel : ViewModel() {
         onFailure: (Exception) -> Unit
     ) {
         repository.setTaskCompleted(taskId, completed, onSuccess, onFailure)
+    }
+
+    fun setDone(
+        taskId: String,
+        done: Boolean,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.setDone(taskId, done, onSuccess, onFailure)
+    }
+
+    fun deleteTask(
+        taskId: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.deleteTask(taskId, onSuccess, onFailure)
     }
 }

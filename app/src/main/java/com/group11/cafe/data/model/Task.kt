@@ -1,5 +1,6 @@
 package com.group11.cafe.data.model
 
+// Negative offsets schedule a task before the session starts.
 data class Task(
     val id: String = "",
     val title: String = "",
@@ -13,7 +14,6 @@ data class Task(
     val assignedCrewName: String = "",
     val crewId: String = "",
     val crewName: String = "",
-    // -30 means half an hour before the session.
     val offsetMinutes: Int = 0,
     val completed: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),

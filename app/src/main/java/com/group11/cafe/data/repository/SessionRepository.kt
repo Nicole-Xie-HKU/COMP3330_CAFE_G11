@@ -1,6 +1,7 @@
 package com.group11.cafe.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.group11.cafe.data.model.Session
 
 class SessionRepository {
@@ -45,6 +46,42 @@ class SessionRepository {
             }
             .addOnFailureListener {
                 onFailure(it)
+            }
+    }
+
+    fun listenToSessions(
+        eventId: String,
+        onChange: (List<Session>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return firestore
+            .collection("sessions")
+            .whereEqualTo("eventId", eventId)
+            .addSnapshotListener { documents, error ->
+                if (error != null) {
+                    onFailure(error)
+                } else if (documents != null) {
+                    onChange(documents.toObjects(Session::class.java))
+                }
+            }
+    }
+
+    fun listenToSession(
+        sessionId: String,
+        onChange: (Session?) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return firestore
+            .collection("sessions")
+            .document(sessionId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onFailure(error)
+                } else if (snapshot == null || !snapshot.exists()) {
+                    onChange(null)
+                } else {
+                    onChange(snapshot.toObject(Session::class.java))
+                }
             }
     }
 
@@ -99,8 +136,10 @@ class SessionRepository {
                 val session =
                     it.toObject(Session::class.java)
 
-                if(session != null) {
+                if (session != null) {
                     onSuccess(session)
+                } else {
+                    onFailure(Exception("Session not found."))
                 }
             }
             .addOnFailureListener {
@@ -128,6 +167,32 @@ class SessionRepository {
             .addOnFailureListener {
                 onFailure(it)
             }
+    }
+
+    fun deleteForEvent(
+        eventId: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("sessions")
+            .whereEqualTo("eventId", eventId)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    onSuccess()
+                    return@addOnSuccessListener
+                }
+
+                val batch = firestore.batch()
+                documents.forEach { document ->
+                    batch.delete(document.reference)
+                }
+                batch.commit()
+                    .addOnSuccessListener { onSuccess() }
+                    .addOnFailureListener { onFailure(it) }
+            }
+            .addOnFailureListener { onFailure(it) }
     }
 
     fun updateSessions(

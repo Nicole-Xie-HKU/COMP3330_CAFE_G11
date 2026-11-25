@@ -1,6 +1,7 @@
 package com.group11.cafe.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.google.firebase.firestore.ListenerRegistration
 import com.group11.cafe.data.model.Session
 import com.group11.cafe.data.repository.SessionRepository
 
@@ -31,6 +32,30 @@ class SessionViewModel : ViewModel() {
         repository.getSessionsForEvent(
             eventId,
             onSuccess,
+            onFailure
+        )
+    }
+
+    fun listenToSessions(
+        eventId: String,
+        onChange: (List<Session>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return repository.listenToSessions(
+            eventId,
+            onChange,
+            onFailure
+        )
+    }
+
+    fun listenToSession(
+        sessionId: String,
+        onChange: (Session?) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return repository.listenToSession(
+            sessionId,
+            onChange,
             onFailure
         )
     }

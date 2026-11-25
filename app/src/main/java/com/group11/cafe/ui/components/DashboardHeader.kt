@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.firebase.auth.FirebaseAuth
+import com.group11.cafe.utils.GuestUtils
 import com.group11.cafe.viewmodel.DashboardViewModel
 
 @Composable
@@ -29,7 +29,7 @@ fun DashboardHeader(
     var profileError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        if (FirebaseAuth.getInstance().currentUser == null) {
+        if (GuestUtils.isGuest()) {
             return@LaunchedEffect
         }
 

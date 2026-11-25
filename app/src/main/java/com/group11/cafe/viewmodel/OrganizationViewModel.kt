@@ -1,6 +1,7 @@
 package com.group11.cafe.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.group11.cafe.data.model.OrganizationMember
 import com.group11.cafe.data.model.User
 import com.group11.cafe.data.repository.OrganizationRepository
 
@@ -41,6 +42,46 @@ class OrganizationViewModel : ViewModel() {
     ) {
         repository.getOrganizersForCrew(
             crewId,
+            onSuccess,
+            onFailure
+        )
+    }
+
+    fun getMembershipsForOrganizer(
+        organizerId: String,
+        onSuccess: (List<OrganizationMember>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.getMembershipsForOrganizer(
+            organizerId,
+            onSuccess,
+            onFailure
+        )
+    }
+
+    fun getMembershipsForCrew(
+        crewId: String,
+        onSuccess: (List<OrganizationMember>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.getMembershipsForCrew(
+            crewId,
+            onSuccess,
+            onFailure
+        )
+    }
+
+    fun setTeamName(
+        organizerId: String,
+        crewId: String,
+        teamName: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        repository.setTeamName(
+            organizerId,
+            crewId,
+            teamName.trim(),
             onSuccess,
             onFailure
         )

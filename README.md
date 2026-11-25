@@ -1,5 +1,5 @@
 # COMP3330_CAFE_G11
-Hello! We are Nick Ze Kun Lei, Karina Qiu,Tony Junxiang Wu and Nicole Xie. We are building CAFE - Cool App for Events: a mobile application allowing event hosts to manage participants and events logistics!
+Hello! We are Nick Ze Kun Lei, Karina Qiu, Tony Junxiang Wu, Nicole Xie, Rig Ved Gautam and Hadi Baher Sayed Mohamed. We are building CAFE - Cool App for Events: a mobile application allowing event hosts to manage participants and events logistics!
 
 # COMP3330 CAFE
 
@@ -142,6 +142,24 @@ gradlew.bat build
 
 1. Connect an Android device with USB debugging enabled or start an Android Emulator.
 2. Click the **Run** button in Android Studio.
+
+---
+
+## How to Try CAFE
+
+Use two phones (or a phone and an emulator). Register one account per role.
+
+1. Organizer: press "Create Event" and enter a date. Open My Events, the event, Sessions, then "Add Session". Tick "Fixed time (never shifted)" for sessions that must not move.
+2. Organizer: open Members and read the crew invite code.
+3. Crew: open Team and enter the invite code. Organizer: on Members, type a team name and press "Save Team".
+4. Organizer: open a session, then Tasks, and add a task for the crew member.
+5. Crew: open My Tasks and tick the task when it is done.
+6. Participant: open an event, then a session, for directions, calendar and share.
+7. Participant: show the QR code. Crew: open the session and press "Scan Check-ins" (needs a real camera).
+8. Organizer: open a session, press "Running Late or Early", check the preview and confirm. The other phones update by themselves.
+9. Participant: press "Need Help" or shake the phone. Crew: open the event, then Help Requests, and press "I Will Go".
+
+Task reminders need the notification permission and may arrive a few minutes late.
 
 ---
 

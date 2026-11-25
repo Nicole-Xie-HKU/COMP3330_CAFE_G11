@@ -33,6 +33,29 @@ class UserRepository {
             }
     }
 
+    fun getUserById(
+        userId: String,
+        onSuccess: (User) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("users")
+            .document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                val user = document.toObject(User::class.java)
+
+                if (user != null) {
+                    onSuccess(user)
+                } else {
+                    onFailure(Exception("Participant not found."))
+                }
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
     fun getCurrentUser(
         onSuccess: (User) -> Unit,
         onFailure: (Exception) -> Unit
