@@ -10,6 +10,7 @@ import com.group11.cafe.data.model.Event
 @Composable
 fun EventDetailsScreen(
     event: Event,
+    onAnnouncementsClick: () -> Unit,
     onViewSessionsClick: () -> Unit
 ) {
 
@@ -42,6 +43,12 @@ fun EventDetailsScreen(
             onClick = onViewSessionsClick
         ) {
             Text("Sessions")
+        }
+
+        Button(
+            onClick = onAnnouncementsClick
+        ) {
+            Text("Announcements")
         }
     }
 }

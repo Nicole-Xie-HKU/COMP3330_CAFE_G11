@@ -41,6 +41,7 @@ import com.group11.cafe.ui.dashboard.CrewDashboard
 import com.group11.cafe.ui.dashboard.DashboardRouter
 import com.group11.cafe.ui.dashboard.OrganizerDashboard
 import com.group11.cafe.ui.dashboard.ParticipantDashboard
+import com.group11.cafe.ui.event.AnnouncementsPage
 import com.group11.cafe.ui.event.CreateEventScreen
 import com.group11.cafe.ui.event.CreateSessionScreen
 import com.group11.cafe.ui.event.EventDetailsScreen
@@ -404,6 +405,11 @@ fun AppNavigation() {
                 sessions = sessions,
                 isLoading = isLoading,
                 errorMessage = errorMessage,
+                onAnnouncementsClick = {
+                    navController.navigate(
+                        Screen.Announcements.createRoute(eventId)
+                    )
+                },
                 onSessionClick = {
                     navController.navigate(
                         Screen.ParticipantSession.createRoute(it.id)
@@ -549,6 +555,11 @@ fun AppNavigation() {
                 event?.let { currentEvent ->
                     EventDetailsScreen(
                         event = currentEvent,
+                        onAnnouncementsClick = {
+                            navController.navigate(
+                                Screen.Announcements.createRoute(currentEvent.id)
+                            )
+                        },
                         onViewSessionsClick = {
                             navController.navigate(
                                 Screen.SessionList.createRoute(currentEvent.id)
@@ -557,6 +568,18 @@ fun AppNavigation() {
                     )
                 }
             }
+        }
+
+        composable(
+            route = Screen.Announcements.route,
+            arguments = listOf(
+                navArgument("eventId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            AnnouncementsPage(
+                eventId = backStackEntry.arguments?.getString("eventId").orEmpty(),
+                canPost = currentUserRole == UserRole.ORGANIZER
+            )
         }
 
         composable(
