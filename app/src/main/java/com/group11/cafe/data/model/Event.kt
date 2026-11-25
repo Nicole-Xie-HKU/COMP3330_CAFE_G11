@@ -6,5 +6,5 @@ data class Event(
     val description: String = "",
     val date: String = "",
     val organizerId: String = "",
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = 0
 )

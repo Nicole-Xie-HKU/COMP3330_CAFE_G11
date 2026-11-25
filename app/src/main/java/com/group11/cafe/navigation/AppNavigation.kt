@@ -486,7 +486,8 @@ fun AppNavigation() {
                         name = name.trim(),
                         description = description.trim(),
                         date = date.trim(),
-                        organizerId = organizerId
+                        organizerId = organizerId,
+                        createdAt = System.currentTimeMillis()
                     )
 
                     eventViewModel.createEvent(
