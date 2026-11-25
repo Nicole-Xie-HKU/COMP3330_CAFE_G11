@@ -9,11 +9,11 @@ import androidx.compose.ui.unit.dp
 import com.group11.cafe.ui.components.DashboardHeader
 import com.group11.cafe.ui.components.ParticipantQrCard
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.group11.cafe.utils.GuestUtils
 import com.group11.cafe.utils.Prefs
 import com.group11.cafe.viewmodel.DashboardViewModel
 import androidx.compose.runtime.*
 import com.group11.cafe.utils.ParticipantQrParser
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ParticipantDashboard(
@@ -27,7 +27,7 @@ fun ParticipantDashboard(
     var isLoadingQr by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        if (FirebaseAuth.getInstance().currentUser == null) {
+        if (GuestUtils.isGuest()) {
             qrCode = ParticipantQrParser.GUEST_QR_CODE
             isLoadingQr = false
             return@LaunchedEffect
@@ -64,9 +64,7 @@ fun ParticipantDashboard(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        val isSignedIn = FirebaseAuth.getInstance().currentUser != null
-
-        if (isSignedIn && lastEventId.isNotBlank()) {
+        if (lastEventId.isNotBlank()) {
             Button(onClick = { onLastEventClick(lastEventId) }) {
                 Text("Open ${Prefs.lastEventName(context)}")
             }

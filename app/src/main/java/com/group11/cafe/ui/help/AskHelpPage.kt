@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.group11.cafe.data.model.HelpRequest
+import com.group11.cafe.utils.GuestUtils
 import com.group11.cafe.viewmodel.DashboardViewModel
 import com.group11.cafe.viewmodel.HelpViewModel
 import java.util.UUID
@@ -37,17 +38,19 @@ fun AskHelpPage(
     val dashboardViewModel: DashboardViewModel = viewModel()
     val requesterId = FirebaseAuth.getInstance().currentUser?.uid.orEmpty()
 
-    var name by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("Guest") }
     var place by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
     var requests by remember { mutableStateOf<List<HelpRequest>>(emptyList()) }
     var message by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        dashboardViewModel.loadCurrentUser(
-            onSuccess = { name = it.name },
-            onFailure = { message = it.message }
-        )
+        if (!GuestUtils.isGuest()) {
+            dashboardViewModel.loadCurrentUser(
+                onSuccess = { name = it.name },
+                onFailure = { message = it.message }
+            )
+        }
     }
 
     DisposableEffect(eventId) {

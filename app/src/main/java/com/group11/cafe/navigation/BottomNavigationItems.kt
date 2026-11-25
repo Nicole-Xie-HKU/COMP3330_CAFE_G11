@@ -31,19 +31,6 @@ val participantNavigationItems = listOf(
     )
 )
 
-val guestNavigationItems = listOf(
-    BottomNavigationItem(
-        label = "Home",
-        route = Screen.ParticipantDashboard.route,
-        icon = Icons.Outlined.Home
-    ),
-    BottomNavigationItem(
-        label = "Settings",
-        route = Screen.ParticipantSettings.route,
-        icon = Icons.Outlined.Settings
-    )
-)
-
 val crewNavigationItems = listOf(
     BottomNavigationItem(
         label = "Home",

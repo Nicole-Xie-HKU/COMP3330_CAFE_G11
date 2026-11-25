@@ -61,6 +61,7 @@ import com.group11.cafe.ui.help.HelpListPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
 import com.group11.cafe.ui.task.MyTasksPage
 import com.group11.cafe.ui.task.SessionTasksPage
+import com.group11.cafe.utils.GuestUtils
 import com.group11.cafe.utils.SessionValidator
 import com.group11.cafe.utils.TimeUtils
 import com.group11.cafe.viewmodel.DashboardViewModel
@@ -86,13 +87,14 @@ fun AppNavigation() {
             Screen.Dashboard.route
         }
     }
-    val bottomNavigationItems = if (signedInUserId != null) {
+    val bottomNavigationItems = if (!GuestUtils.isGuest()) {
         bottomNavigationItemsForRole(currentUserRole)
     } else if (currentRoute in listOf(
             Screen.ParticipantDashboard.route,
+            Screen.ParticipantEventsTab.route,
             Screen.ParticipantSettings.route
         )) {
-        guestNavigationItems
+        participantNavigationItems
     } else {
         null
     }
@@ -200,10 +202,21 @@ fun AppNavigation() {
                     )
                 },
                 onGuestClick = {
-                    FirebaseAuth.getInstance().signOut()
-                    navController.navigate(Screen.ParticipantDashboard.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                    }
+                    isLoading = true
+                    errorMessage = null
+
+                    loginViewModel.loginAsGuest(
+                        onSuccess = {
+                            isLoading = false
+                            navController.navigate(Screen.ParticipantDashboard.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }
+                            }
+                        },
+                        onFailure = {
+                            isLoading = false
+                            errorMessage = it.message ?: "Guest login failed."
+                        }
+                    )
                 },
                 onRegisterClick = {
                     navController.navigate(Screen.Register.route)

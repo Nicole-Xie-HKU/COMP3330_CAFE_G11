@@ -63,6 +63,19 @@ class AuthRepository {
             }
     }
 
+    fun loginAsGuest(
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        auth.signInAnonymously()
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener {
+                onFailure(it)
+            }
+    }
+
     fun login(
         email: String,
         password: String,
