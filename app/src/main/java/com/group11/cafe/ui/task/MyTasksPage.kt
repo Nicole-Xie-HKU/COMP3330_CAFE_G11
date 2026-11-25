@@ -1,5 +1,9 @@
 package com.group11.cafe.ui.task
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.group11.cafe.data.model.Session
 import com.group11.cafe.data.model.Task
+import com.group11.cafe.reminder.TaskReminder
 import com.group11.cafe.ui.components.currentTime
 import com.group11.cafe.utils.Feedback
 import com.group11.cafe.utils.TimeUtils
@@ -83,6 +88,25 @@ fun MyTasksPage() {
 
     LaunchedEffect(crewId) {
         loadTasks()
+    }
+
+    LaunchedEffect(tasks, sessions) {
+        tasks.forEach { task ->
+            val time = TimeUtils.toMillis(task.eventDate, timeOf(task))
+            if (time != null) {
+                TaskReminder.set(context, task, time)
+            }
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     val eventIds = tasks.map { it.eventId }.distinct()

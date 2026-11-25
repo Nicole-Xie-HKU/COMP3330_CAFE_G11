@@ -159,6 +159,8 @@ Use two phones (or a phone and an emulator). Register one account per role.
 8. Organizer: open a session, press "Running Late or Early", check the preview and confirm. The other phones update by themselves.
 9. Participant: press "Need Help" or shake the phone. Crew: open the event, then Help Requests, and press "I Will Go".
 
+Task reminders need the notification permission and may arrive a few minutes late.
+
 ---
 
 ## Working on New Features
