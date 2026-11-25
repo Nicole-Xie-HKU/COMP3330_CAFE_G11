@@ -19,6 +19,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -497,31 +500,128 @@ fun AppNavigation() {
             )
         }
 
+        composable(
+            route = Screen.EditEvent.route,
+            arguments = listOf(
+                navArgument("eventId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments
+                ?.getString("eventId")
+                ?: return@composable
+            val eventViewModel: EventViewModel = viewModel()
+            var event by remember { mutableStateOf<Event?>(null) }
+            var errorMessage by remember { mutableStateOf<String?>(null) }
+            var loaded by remember { mutableStateOf(false) }
+
+            LaunchedEffect(eventId) {
+                eventViewModel.getEventById(
+                    eventId,
+                    onSuccess = {
+                        event = it
+                        loaded = true
+                    },
+                    onFailure = {
+                        errorMessage = it.message ?: "Event not found."
+                        loaded = true
+                    }
+                )
+            }
+
+            val currentEvent = event
+            val signedInUserId = FirebaseAuth.getInstance().currentUser?.uid
+
+            if (!loaded) {
+                CircularProgressIndicator()
+            } else if (currentEvent == null) {
+                Text(
+                    text = errorMessage ?: "Event not found.",
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else if (currentEvent.organizerId != signedInUserId) {
+                Text(
+                    text = "You cannot edit this event.",
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else {
+                CreateEventScreen(
+                    screenTitle = "Edit Event",
+                    buttonText = "Save Changes",
+                    initialName = currentEvent.name,
+                    initialDescription = currentEvent.description,
+                    initialDate = currentEvent.date,
+                    errorMessage = errorMessage,
+                    onCreateEvent = { name, description, date ->
+                        val uid = FirebaseAuth.getInstance().currentUser?.uid
+                        if (uid == null || uid != currentEvent.organizerId) {
+                            errorMessage = "You cannot edit this event."
+                            return@CreateEventScreen
+                        }
+                        if (name.isBlank()) {
+                            errorMessage = "Enter an event name."
+                            return@CreateEventScreen
+                        }
+                        if (!TimeUtils.isDate(date)) {
+                            errorMessage = "Use a date like 2026-11-30."
+                            return@CreateEventScreen
+                        }
+
+                        eventViewModel.updateEvent(
+                            currentEvent.copy(
+                                name = name.trim(),
+                                description = description.trim(),
+                                date = date.trim()
+                            ),
+                            onSuccess = { navController.popBackStack() },
+                            onFailure = {
+                                errorMessage = it.message ?: "Could not save the event."
+                            }
+                        )
+                    }
+                )
+            }
+        }
+
         composable(Screen.EventList.route) {
             val eventViewModel: EventViewModel = viewModel()
             var events by remember { mutableStateOf<List<Event>>(emptyList()) }
             var isLoading by remember { mutableStateOf(true) }
             var errorMessage by remember { mutableStateOf<String?>(null) }
             val organizerId = FirebaseAuth.getInstance().currentUser?.uid
+            val lifecycleOwner = LocalLifecycleOwner.current
 
-            LaunchedEffect(organizerId) {
-                if (organizerId == null) {
-                    errorMessage = "Please sign in again."
-                    isLoading = false
-                    return@LaunchedEffect
+            DisposableEffect(lifecycleOwner, organizerId) {
+                fun loadEvents() {
+                    if (organizerId == null) {
+                        errorMessage = "Please sign in again."
+                        isLoading = false
+                        return
+                    }
+
+                    eventViewModel.getEventsForOrganizer(
+                        organizerId,
+                        onSuccess = {
+                            events = it
+                            isLoading = false
+                            errorMessage = null
+                        },
+                        onFailure = {
+                            errorMessage = it.message ?: "Could not load events."
+                            isLoading = false
+                        }
+                    )
                 }
 
-                eventViewModel.getEventsForOrganizer(
-                    organizerId,
-                    onSuccess = {
-                        events = it
-                        isLoading = false
-                    },
-                    onFailure = {
-                        errorMessage = it.message ?: "Could not load events."
-                        isLoading = false
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_RESUME) {
+                        loadEvents()
                     }
-                )
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+                loadEvents()
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
+                }
             }
 
             Column(
@@ -562,25 +662,42 @@ fun AppNavigation() {
             val eventViewModel: EventViewModel = viewModel()
             var event by remember { mutableStateOf<Event?>(null) }
             var errorMessage by remember { mutableStateOf<String?>(null) }
+            var received by remember { mutableStateOf(false) }
 
-            LaunchedEffect(eventId) {
-                eventViewModel.getEventById(
+            DisposableEffect(eventId) {
+                val listener = eventViewModel.listenToEvent(
                     eventId,
-                    onSuccess = { event = it },
+                    onChange = { updated ->
+                        event = updated
+                        received = true
+                    },
                     onFailure = {
                         errorMessage = it.message ?: "Could not load the event."
                     }
                 )
+
+                onDispose {
+                    listener.remove()
+                }
             }
 
-            if (event == null && errorMessage == null) {
+            if (!received && errorMessage == null) {
                 CircularProgressIndicator()
-            } else if (errorMessage != null) {
-                Text(errorMessage ?: "", color = MaterialTheme.colorScheme.error)
             } else {
-                event?.let { currentEvent ->
+                val currentEvent = event
+
+                if (currentEvent == null) {
+                    Text(
+                        text = errorMessage ?: "Event not found.",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                } else {
                     EventDetailsScreen(
                         event = currentEvent,
+                        canEdit = currentUserRole == UserRole.ORGANIZER &&
+                            currentEvent.organizerId ==
+                            FirebaseAuth.getInstance().currentUser?.uid,
+                        errorMessage = errorMessage,
                         onAnnouncementsClick = {
                             navController.navigate(
                                 Screen.Announcements.createRoute(currentEvent.id)
@@ -594,6 +711,22 @@ fun AppNavigation() {
                         onViewSessionsClick = {
                             navController.navigate(
                                 Screen.SessionList.createRoute(currentEvent.id)
+                            )
+                        },
+                        onEditClick = {
+                            navController.navigate(
+                                Screen.EditEvent.createRoute(currentEvent.id)
+                            )
+                        },
+                        onDeleteClick = {
+                            errorMessage = null
+                            eventViewModel.deleteEvent(
+                                currentEvent.id,
+                                onSuccess = { navController.popBackStack() },
+                                onFailure = {
+                                    errorMessage =
+                                        it.message ?: "Could not delete the event."
+                                }
                             )
                         }
                     )
@@ -917,21 +1050,35 @@ fun AppNavigation() {
             val sessionViewModel: SessionViewModel = viewModel()
             var session by remember { mutableStateOf<Session?>(null) }
             var errorMessage by remember { mutableStateOf<String?>(null) }
+            var received by remember { mutableStateOf(false) }
 
-            LaunchedEffect(sessionId) {
-                sessionViewModel.getSessionById(
+            DisposableEffect(sessionId) {
+                val listener = sessionViewModel.listenToSession(
                     sessionId,
-                    onSuccess = { session = it },
+                    onChange = { updated ->
+                        session = updated
+                        received = true
+                        errorMessage = null
+                    },
                     onFailure = {
                         errorMessage = it.message ?: "Could not load the session."
                     }
                 )
+
+                onDispose {
+                    listener.remove()
+                }
             }
 
-            if (session == null && errorMessage == null) {
+            if (!received && errorMessage == null) {
                 CircularProgressIndicator()
             } else if (errorMessage != null) {
                 Text(errorMessage ?: "", color = MaterialTheme.colorScheme.error)
+            } else if (session == null) {
+                Text(
+                    text = "Session not found.",
+                    color = MaterialTheme.colorScheme.error
+                )
             } else {
                 session?.let { currentSession ->
                     SessionDetailsScreen(

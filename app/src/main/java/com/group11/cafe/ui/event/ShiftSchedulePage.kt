@@ -117,6 +117,7 @@ fun ShiftSchedulePage(
             if (minutes != 0) {
                 val before = ShiftUtils.sessionsToMove(sessions, start)
                 val after = ShiftUtils.move(before, minutes)
+                val staying = ShiftUtils.fixedSessionsStaying(sessions, start)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -125,6 +126,8 @@ fun ShiftSchedulePage(
                 } else if (ShiftUtils.passesMidnight(before, minutes)) {
                     Text("A session would pass midnight.")
                 } else {
+                    val clashes = ShiftUtils.clashes(sessions, after)
+
                     Text(
                         text = "Preview",
                         style = MaterialTheme.typography.titleLarge
@@ -135,19 +138,25 @@ fun ShiftSchedulePage(
                         Text("${moved.title}: ${old?.startTime} to ${moved.startTime}")
                     }
 
-                    ShiftUtils.clashes(sessions, after).forEach {
+                    clashes.forEach {
                         Text(
-                            text = "Overlaps with $it",
+                            text = "Overlaps with $it.",
                             color = MaterialTheme.colorScheme.error
                         )
                     }
 
-                    Button(
-                        onClick = {
-                            save(after, "Schedule moved.", before)
+                    staying.forEach {
+                        Text("${it.title} stays at ${it.startTime} (fixed)")
+                    }
+
+                    if (clashes.isEmpty()) {
+                        Button(
+                            onClick = {
+                                save(after, "Schedule moved.", before)
+                            }
+                        ) {
+                            Text("Confirm")
                         }
-                    ) {
-                        Text("Confirm")
                     }
                 }
             }

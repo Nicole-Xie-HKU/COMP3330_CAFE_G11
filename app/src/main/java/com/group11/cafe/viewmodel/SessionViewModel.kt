@@ -48,6 +48,18 @@ class SessionViewModel : ViewModel() {
         )
     }
 
+    fun listenToSession(
+        sessionId: String,
+        onChange: (Session?) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return repository.listenToSession(
+            sessionId,
+            onChange,
+            onFailure
+        )
+    }
+
     fun updateSession(
         session: Session,
         onSuccess: () -> Unit,

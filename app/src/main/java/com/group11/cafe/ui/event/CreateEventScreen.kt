@@ -29,6 +29,11 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun CreateEventScreen(
+    screenTitle: String = "Create Event",
+    buttonText: String = "Create Event",
+    initialName: String = "",
+    initialDescription: String = "",
+    initialDate: String = "",
     errorMessage: String? = null,
     onCreateEvent: (
         String,
@@ -38,15 +43,15 @@ fun CreateEventScreen(
 ) {
 
     var eventName by remember {
-        mutableStateOf("")
+        mutableStateOf(initialName)
     }
 
     var eventDescription by remember {
-        mutableStateOf("")
+        mutableStateOf(initialDescription)
     }
 
     var eventDate by remember {
-        mutableStateOf("")
+        mutableStateOf(initialDate)
     }
 
     var showDatePicker by remember {
@@ -60,7 +65,7 @@ fun CreateEventScreen(
     ) {
 
         Text(
-            "Create Event",
+            screenTitle,
             style = MaterialTheme.typography.headlineMedium
         )
 
@@ -127,7 +132,7 @@ fun CreateEventScreen(
                 )
             }
         ) {
-            Text("Create Event")
+            Text(buttonText)
         }
     }
 

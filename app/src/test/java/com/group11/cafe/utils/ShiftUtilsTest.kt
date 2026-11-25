@@ -37,6 +37,13 @@ class ShiftUtilsTest {
     }
 
     @Test
+    fun fixedSessionsStaying_listsFixedSessionsAtOrAfterTheStart() {
+        assertEquals(listOf(lunch), ShiftUtils.fixedSessionsStaying(all, opening))
+        assertEquals(listOf(lunch), ShiftUtils.fixedSessionsStaying(all, judging))
+        assertTrue(ShiftUtils.fixedSessionsStaying(all, awards).isEmpty())
+    }
+
+    @Test
     fun clashes_warnsAboutFixedSession() {
         val before = listOf(awards)
 
