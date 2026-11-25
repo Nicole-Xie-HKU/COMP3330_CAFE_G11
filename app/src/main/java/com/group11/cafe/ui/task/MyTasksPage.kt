@@ -53,14 +53,6 @@ fun MyTasksPage() {
             onSuccess = { loaded ->
                 tasks = loaded
                 isLoading = false
-
-                loaded.map { it.eventId }.distinct().forEach { eventId ->
-                    sessionViewModel.getSessionsForEvent(
-                        eventId,
-                        onSuccess = { sessions = sessions + it },
-                        onFailure = { errorMessage = it.message }
-                    )
-                }
             },
             onFailure = {
                 errorMessage = it.message ?: "Could not load tasks."
@@ -89,6 +81,24 @@ fun MyTasksPage() {
 
     LaunchedEffect(crewId) {
         loadTasks()
+    }
+
+    val eventIds = tasks.map { it.eventId }.distinct()
+
+    DisposableEffect(eventIds) {
+        val listeners = eventIds.map { eventId ->
+            sessionViewModel.listenToSessions(
+                eventId,
+                onChange = { changed ->
+                    sessions = sessions.filter { it.eventId != eventId } + changed
+                },
+                onFailure = { errorMessage = it.message }
+            )
+        }
+
+        onDispose {
+            listeners.forEach { it.remove() }
+        }
     }
 
     // refresh the time left twice a minute
