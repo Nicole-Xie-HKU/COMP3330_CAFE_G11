@@ -31,6 +31,7 @@ import com.group11.cafe.utils.Feedback
 import com.group11.cafe.utils.GuestUtils
 import com.group11.cafe.utils.NetworkUtils
 import com.group11.cafe.utils.Prefs
+import com.group11.cafe.utils.SignupButton
 import com.group11.cafe.viewmodel.DashboardViewModel
 import com.group11.cafe.viewmodel.SignupViewModel
 
@@ -108,26 +109,26 @@ fun ParticipantScheduleScreen(
 
         Text("${event.name} ${event.date}")
 
-        if (!GuestUtils.isGuest()) {
+        if (SignupButton.visible(GuestUtils.isGuest())) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
                 onClick = {
-                    if (uid.isNullOrBlank() || event.id.isBlank()) {
+                    val userId = uid
+                    if (userId.isNullOrBlank() || !SignupButton.canPress(isSaving, event.id)) {
                         return@Button
                     }
                     isSaving = true
                     signupError = null
                     if (signup == null) {
                         signupViewModel.signUp(
-                            Signup(
-                                id = "${event.id}_$uid",
+                            SignupButton.newSignup(
                                 eventId = event.id,
                                 eventName = event.name,
                                 eventDate = event.date,
-                                userId = uid,
+                                userId = userId,
                                 participantName = participantName,
-                                createdAt = System.currentTimeMillis()
+                                nowMillis = System.currentTimeMillis()
                             ),
                             onSuccess = { isSaving = false },
                             onFailure = {
@@ -138,7 +139,7 @@ fun ParticipantScheduleScreen(
                     } else {
                         signupViewModel.cancel(
                             event.id,
-                            uid,
+                            userId,
                             onSuccess = { isSaving = false },
                             onFailure = {
                                 isSaving = false
@@ -147,10 +148,10 @@ fun ParticipantScheduleScreen(
                         )
                     }
                 },
-                enabled = !isSaving && event.id.isNotBlank(),
+                enabled = SignupButton.canPress(isSaving, event.id),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (signup == null) "I'm going" else "You're going")
+                Text(SignupButton.label(signup != null))
             }
 
             if (signupError != null) {
