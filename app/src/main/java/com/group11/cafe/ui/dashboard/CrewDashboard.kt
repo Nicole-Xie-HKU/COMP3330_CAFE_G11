@@ -27,9 +27,6 @@ fun CrewDashboard(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(onClick = {}) {
-            Text("My Tasks")
-        }
 
         Button(
             onClick = onAttendanceScannerClick

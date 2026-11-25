@@ -73,9 +73,6 @@ sealed class Screen(val route: String) {
         ) = "edit_session/$sessionId"
     }
 
-    object ParticipantEventList :
-        Screen("participant_event_list")
-
     object ParticipantSchedule :
         Screen("participant_schedule/{eventId}") {
 

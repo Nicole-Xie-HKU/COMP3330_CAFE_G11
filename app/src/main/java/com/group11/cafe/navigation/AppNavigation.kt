@@ -49,7 +49,6 @@ import com.group11.cafe.ui.event.ShiftScheduleScreen
 import com.group11.cafe.ui.crew.CrewTeamPage
 import com.group11.cafe.ui.components.AppBackButton
 import com.group11.cafe.ui.components.AppBottomNavigationBar
-import com.group11.cafe.ui.components.EmptyPage
 import com.group11.cafe.ui.components.SettingsPage
 import com.group11.cafe.ui.organizer.OrganizerMembersPage
 import com.group11.cafe.utils.SessionValidator
@@ -323,56 +322,6 @@ fun AppNavigation() {
                     logout(navController)
                 }
             )
-        }
-
-        composable(Screen.ParticipantEventList.route) {
-            val eventViewModel: EventViewModel = viewModel()
-            var events by remember { mutableStateOf<List<Event>>(emptyList()) }
-            var isLoading by remember { mutableStateOf(true) }
-            var errorMessage by remember { mutableStateOf<String?>(null) }
-
-            LaunchedEffect(Unit) {
-                eventViewModel.getAllEvents(
-                    onSuccess = {
-                        events = it
-                        isLoading = false
-                    },
-                    onFailure = {
-                        errorMessage = it.message ?: "Could not load events."
-                        isLoading = false
-                    }
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp)
-            ) {
-                Text(
-                    text = "Choose an Event",
-                    style = MaterialTheme.typography.headlineMedium
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (isLoading) {
-                    CircularProgressIndicator()
-                } else if (errorMessage != null) {
-                    Text(errorMessage ?: "", color = MaterialTheme.colorScheme.error)
-                } else if (events.isEmpty()) {
-                    Text("No events are available yet.")
-                } else {
-                    EventListScreen(
-                        events = events,
-                        onEventClick = {
-                            navController.navigate(
-                                Screen.ParticipantSchedule.createRoute(it.id)
-                            )
-                        }
-                    )
-                }
-            }
         }
 
         composable(
