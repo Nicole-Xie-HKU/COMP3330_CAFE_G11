@@ -10,7 +10,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,21 +35,35 @@ fun ParticipantSessionPage(
     var eventDate by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(sessionId) {
-        sessionViewModel.getSessionById(
+    DisposableEffect(sessionId) {
+        var fetchedEventId: String? = null
+        val listener = sessionViewModel.listenToSession(
             sessionId,
-            onSuccess = { loaded ->
-                session = loaded
-                eventViewModel.getEventById(
-                    loaded.eventId,
-                    onSuccess = { eventDate = it.date },
-                    onFailure = {}
-                )
+            onChange = { updated ->
+                session = updated
+                if (updated == null) {
+                    errorMessage = "Session not found."
+                } else {
+                    errorMessage = null
+                    if (fetchedEventId != updated.eventId) {
+                        eventDate = ""
+                        fetchedEventId = updated.eventId
+                        eventViewModel.getEventById(
+                            updated.eventId,
+                            onSuccess = { eventDate = it.date },
+                            onFailure = { fetchedEventId = null }
+                        )
+                    }
+                }
             },
             onFailure = {
                 errorMessage = it.message ?: "Could not load the session."
             }
         )
+
+        onDispose {
+            listener.remove()
+        }
     }
 
     Column(
@@ -77,13 +91,28 @@ fun ParticipantSessionPage(
             Text("Location: ${current.location}")
             Text("Time: ${current.startTime} - ${current.endTime}")
 
+            if (current.movedMinutes > 0) {
+                Text(
+                    text = "Moved ${current.movedMinutes} min later",
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else if (current.movedMinutes < 0) {
+                Text(
+                    text = "Moved ${-current.movedMinutes} min earlier",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(onClick = { SessionIntents.openDirections(context, current) }) {
                 Text("Directions")
             }
 
-            Button(onClick = { SessionIntents.addToCalendar(context, current, eventDate) }) {
+            Button(
+                onClick = { SessionIntents.addToCalendar(context, current, eventDate) },
+                enabled = eventDate.isNotBlank()
+            ) {
                 Text("Add to Calendar")
             }
 

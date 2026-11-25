@@ -66,6 +66,25 @@ class SessionRepository {
             }
     }
 
+    fun listenToSession(
+        sessionId: String,
+        onChange: (Session?) -> Unit,
+        onFailure: (Exception) -> Unit
+    ): ListenerRegistration {
+        return firestore
+            .collection("sessions")
+            .document(sessionId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    onFailure(error)
+                } else if (snapshot == null || !snapshot.exists()) {
+                    onChange(null)
+                } else {
+                    onChange(snapshot.toObject(Session::class.java))
+                }
+            }
+    }
+
     fun updateSession(
         session: Session,
         onSuccess: () -> Unit,

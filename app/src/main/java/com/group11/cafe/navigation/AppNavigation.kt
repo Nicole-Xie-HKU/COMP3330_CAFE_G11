@@ -917,21 +917,35 @@ fun AppNavigation() {
             val sessionViewModel: SessionViewModel = viewModel()
             var session by remember { mutableStateOf<Session?>(null) }
             var errorMessage by remember { mutableStateOf<String?>(null) }
+            var received by remember { mutableStateOf(false) }
 
-            LaunchedEffect(sessionId) {
-                sessionViewModel.getSessionById(
+            DisposableEffect(sessionId) {
+                val listener = sessionViewModel.listenToSession(
                     sessionId,
-                    onSuccess = { session = it },
+                    onChange = { updated ->
+                        session = updated
+                        received = true
+                        errorMessage = null
+                    },
                     onFailure = {
                         errorMessage = it.message ?: "Could not load the session."
                     }
                 )
+
+                onDispose {
+                    listener.remove()
+                }
             }
 
-            if (session == null && errorMessage == null) {
+            if (!received && errorMessage == null) {
                 CircularProgressIndicator()
             } else if (errorMessage != null) {
                 Text(errorMessage ?: "", color = MaterialTheme.colorScheme.error)
+            } else if (session == null) {
+                Text(
+                    text = "Session not found.",
+                    color = MaterialTheme.colorScheme.error
+                )
             } else {
                 session?.let { currentSession ->
                     SessionDetailsScreen(
