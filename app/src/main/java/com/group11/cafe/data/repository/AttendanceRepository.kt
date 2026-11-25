@@ -72,6 +72,32 @@ class AttendanceRepository {
             }
     }
 
+    fun deleteForEvent(
+        eventId: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        firestore
+            .collection("attendance")
+            .whereEqualTo("eventId", eventId)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    onSuccess()
+                    return@addOnSuccessListener
+                }
+
+                val batch = firestore.batch()
+                documents.forEach { document ->
+                    batch.delete(document.reference)
+                }
+                batch.commit()
+                    .addOnSuccessListener { onSuccess() }
+                    .addOnFailureListener { onFailure(it) }
+            }
+            .addOnFailureListener { onFailure(it) }
+    }
+
     fun getAttendanceForEvent(
         eventId: String,
         onSuccess: (List<AttendanceRecord>) -> Unit,
