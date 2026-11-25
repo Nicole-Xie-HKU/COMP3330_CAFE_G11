@@ -206,7 +206,9 @@ fun TaskManagementScreen(isOrganizer: Boolean) {
                             eventId = event.id,
                             eventName = event.name,
                             assignedCrewId = selectedCrew?.id.orEmpty(),
-                            assignedCrewName = selectedCrew?.name.orEmpty()
+                            assignedCrewName = selectedCrew?.name.orEmpty(),
+                            crewId = selectedCrew?.id.orEmpty(),
+                            crewName = selectedCrew?.name.orEmpty()
                         )
                         taskViewModel.createTask(
                             task = task,
