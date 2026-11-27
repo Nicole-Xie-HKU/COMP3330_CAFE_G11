@@ -1,10 +1,10 @@
 package com.group11.cafe.data.repository
 
-
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.group11.cafe.data.model.AttendanceRecord
+import com.group11.cafe.utils.AttendanceRecordId
 
 class AttendanceRepository {
 
@@ -19,7 +19,11 @@ class AttendanceRepository {
         onSuccess: (Boolean) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        val recordId = "${eventId}_${sessionId}_${participantId}"
+        val recordId = AttendanceRecordId.create(
+            eventId,
+            sessionId,
+            participantId
+        )
 
         val attendanceRef = firestore
             .collection("attendance")
@@ -67,7 +71,9 @@ class AttendanceRepository {
                 if (error != null) {
                     onFailure(error)
                 } else if (documents != null) {
-                    onChange(documents.toObjects(AttendanceRecord::class.java))
+                    onChange(
+                        documents.toObjects(AttendanceRecord::class.java)
+                    )
                 }
             }
     }
@@ -108,9 +114,11 @@ class AttendanceRepository {
                 }
 
                 val batch = firestore.batch()
+
                 documents.forEach { document ->
                     batch.delete(document.reference)
                 }
+
                 batch.commit()
                     .addOnSuccessListener { onSuccess() }
                     .addOnFailureListener { onFailure(it) }

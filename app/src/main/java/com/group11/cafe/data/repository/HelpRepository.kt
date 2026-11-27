@@ -41,9 +41,11 @@ class HelpRepository {
                 }
 
                 val batch = firestore.batch()
+
                 documents.forEach { document ->
                     batch.delete(document.reference)
                 }
+
                 batch.commit()
                     .addOnSuccessListener { onSuccess() }
                     .addOnFailureListener { onFailure(it) }
@@ -79,15 +81,17 @@ class HelpRepository {
             .document(requestId)
 
         firestore.runTransaction { transaction ->
-            if (transaction.get(request).getString("status") == "open") {
+            val snapshot = transaction.get(request)
+
+            if (snapshot.exists() && snapshot.getString("status") == "open") {
                 transaction.update(request, "status", "claimed")
                 transaction.update(request, "crewName", crewName)
                 true
             } else {
                 false
             }
-        }.addOnSuccessListener {
-            onSuccess(it)
+        }.addOnSuccessListener { claimed ->
+            onSuccess(claimed)
         }.addOnFailureListener {
             onFailure(it)
         }
@@ -98,15 +102,28 @@ class HelpRepository {
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        firestore
+        val request = firestore
             .collection("helpRequests")
             .document(requestId)
-            .update("status", "done")
-            .addOnSuccessListener {
-                onSuccess()
+
+        firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(request)
+
+            if (!snapshot.exists()) {
+                throw IllegalStateException("Help request not found.")
             }
-            .addOnFailureListener {
-                onFailure(it)
+
+            if (snapshot.getString("status") != "claimed") {
+                throw IllegalStateException(
+                    "Only claimed help requests can be marked as done."
+                )
             }
+
+            transaction.update(request, "status", "done")
+        }.addOnSuccessListener {
+            onSuccess()
+        }.addOnFailureListener {
+            onFailure(it)
+        }
     }
 }
